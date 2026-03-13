@@ -1,4 +1,4 @@
-name: Continuous Deployment
+name: Deploy fabrica-door
 
 on:
   push:
@@ -6,56 +6,50 @@ on:
       - main
   workflow_dispatch:
 
-# Definimos variáveis globais aqui para facilitar a manutenção
-env:
-  PROJECT_NAME: ${{ github.event.repository.name }} # Usa o nome do repo como padrão
-  COMPOSE_FILE: docker-compose.yml
-
 jobs:
   deploy:
-    name: 🚀 Deploy ${{ github.event.repository.name }}
+    name: 🚀 Deploy App
     runs-on: self-hosted
 
     steps:
+      # ── 1. PREPARAÇÃO ───────────────────────────────────────────────────────
       - name: 📂 Checkout do Código
         uses: actions/checkout@v4
 
-      - name: 📝 Gerar arquivo .env a partir dos Secrets
+      - name: 🔐 Montar arquivo .env
         run: |
-          echo "${{ secrets.PROD_ENV_FILE }}" > .env
-          
-          # Opcional: Se você quiser garantir que o PROJECT_NAME 
-          # do .env seja respeitado pelo docker compose:
-          export $(grep -v '^#' .env | xargs)
+          echo '${{ secrets.PROD_ENV_FILE }}' > .env
+          echo ".env gerado com sucesso."
 
       - name: 🛠️ Validar Ambiente e Arquivos
         run: |
           echo "Verificando arquivos críticos..."
-          test -f ${{ env.COMPOSE_FILE }} || (echo "ERRO: ${{ env.COMPOSE_FILE }} não encontrado" && exit 1)
-          
-          echo "Validando sintaxe do Docker Compose..."
-          docker compose -f ${{ env.COMPOSE_FILE }} config -q
+          test -f docker-compose.yml || (echo "ERRO: docker-compose.yml não encontrado" && exit 1)
+          test -f .env || (echo "ERRO: .env não foi gerado corretamente" && exit 1)
 
+          echo "Validando sintaxe do Docker Compose..."
+          docker compose -f docker-compose.yml --env-file .env config -q
+
+      # ── 2. EXECUÇÃO ─────────────────────────────────────────────────────────
       - name: 🐳 Atualizar e Subir Containers
         run: |
-          echo "Atualizando imagens para o projeto: ${{ env.PROJECT_NAME }}"
-          docker compose -f ${{ env.COMPOSE_FILE }} pull --quiet
-          
-          echo "Iniciando serviços..."
-          # O parâmetro --project-name (ou -p) garante que o stack tenha o nome correto
-          docker compose -p ${{ env.PROJECT_NAME }} -f ${{ env.COMPOSE_FILE }} up -d --remove-orphans --wait
+          echo "Puxando imagens novas (se houver)..."
+          docker compose -f docker-compose.yml --env-file .env pull --quiet
 
+          echo "Iniciando serviços de produção..."
+          docker compose -f docker-compose.yml --env-file .env up -d --remove-orphans --wait
+
+      # ── 3. MANUTENÇÃO (PÓS-DEPLOY) ──────────────────────────────────────────
       - name: 📊 Status Final
         run: |
           echo "--- Containers Ativos ---"
-          docker compose -p ${{ env.PROJECT_NAME }} ps
-          
+          docker compose -f docker-compose.yml ps
+
           echo "--- Consumo de Recursos ---"
-          # Aqui filtramos os stats apenas para os containers deste projeto específico
-          docker stats --no-stream $(docker ps -q --filter "label=com.docker.compose.project=${{ env.PROJECT_NAME }}")
+          docker stats --no-stream fabrica-door
 
       - name: 🧹 Limpeza de Imagens Antigas
         if: always()
         run: |
-          echo "Removendo imagens não utilizadas..."
+          echo "Limpando imagens dangling (sem tag)..."
           docker image prune -f
