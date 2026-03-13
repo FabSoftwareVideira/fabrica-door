@@ -23,14 +23,17 @@ FROM python:3.13-slim
 
 WORKDIR /app
 
+# ✅ Instalar curl para o healthcheck
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends curl && \
+    rm -rf /var/lib/apt/lists/*
+
 # Garantir que o PATH inclua os binários do Python instalados
 ENV PATH="/usr/local/bin:/usr/bin:/bin:/usr/local/lib/python3.13/site-packages/.bin:$PATH"
 ENV PYTHONPATH="/usr/local/lib/python3.13/site-packages:$PYTHONPATH"
 
 # Copiar o output gerado, dependências e binários do Pelican
 COPY --from=builder /app/output ./output
-# COPY --from=builder /usr/local/lib/python3.13/site-packages/ /usr/local/lib/python3.13/site-packages/
-# COPY --from=builder /usr/local/bin/pelican /usr/local/bin/pelican
 
 # Copiar arquivos de configuração e scripts necessários
 COPY entrypoint.sh ./
