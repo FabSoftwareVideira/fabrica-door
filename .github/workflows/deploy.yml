@@ -20,6 +20,14 @@ jobs:
       - name: 📂 Checkout do Código
         uses: actions/checkout@v4
 
+      - name: 📝 Gerar arquivo .env a partir dos Secrets
+        run: |
+          echo "${{ secrets.PROD_ENV_FILE }}" > .env
+          
+          # Opcional: Se você quiser garantir que o PROJECT_NAME 
+          # do .env seja respeitado pelo docker compose:
+          export $(grep -v '^#' .env | xargs)
+
       - name: 🛠️ Validar Ambiente e Arquivos
         run: |
           echo "Verificando arquivos críticos..."
