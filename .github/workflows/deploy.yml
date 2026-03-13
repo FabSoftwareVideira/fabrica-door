@@ -6,56 +6,49 @@ on:
       - main
   workflow_dispatch:
 
-# Definimos variáveis globais aqui para facilitar a manutenção
-env:
-  PROJECT_NAME: ${{ github.event.repository.name }} # Usa o nome do repo como padrão
-  COMPOSE_FILE: docker-compose.yml
-
 jobs:
   deploy:
-    name: 🚀 Deploy ${{ github.event.repository.name }}
+    name: 🚀 Deploy App
     runs-on: self-hosted
 
     steps:
       - name: 📂 Checkout do Código
         uses: actions/checkout@v4
 
-      - name: 📝 Gerar arquivo .env a partir dos Secrets
+      - name: 📝 Criar arquivo .env
         run: |
+          # O segredo PROD_ENV_FILE deve conter todo o conteúdo do seu .env
           echo "${{ secrets.PROD_ENV_FILE }}" > .env
-          
-          # Opcional: Se você quiser garantir que o PROJECT_NAME 
-          # do .env seja respeitado pelo docker compose:
-          export $(grep -v '^#' .env | xargs)
+          chmod 600 .env
 
-      - name: 🛠️ Validar Ambiente e Arquivos
+      - name: 🛠️ Validar e Subir Containers
         run: |
-          echo "Verificando arquivos críticos..."
-          test -f ${{ env.COMPOSE_FILE }} || (echo "ERRO: ${{ env.COMPOSE_FILE }} não encontrado" && exit 1)
+          # Carrega as variáveis do .env de forma segura para o shell atual
+          set -a
+          source .env
+          set +a
           
-          echo "Validando sintaxe do Docker Compose..."
-          docker compose -f ${{ env.COMPOSE_FILE }} config -q
-
-      - name: 🐳 Atualizar e Subir Containers
-        run: |
-          echo "Atualizando imagens para o projeto: ${{ env.PROJECT_NAME }}"
-          docker compose -f ${{ env.COMPOSE_FILE }} pull --quiet
+          echo "Validando projeto: $PROJECT_NAME"
           
-          echo "Iniciando serviços..."
-          # O parâmetro --project-name (ou -p) garante que o stack tenha o nome correto
-          docker compose -p ${{ env.PROJECT_NAME }} -f ${{ env.COMPOSE_FILE }} up -d --remove-orphans --wait
+          # 1. Pull das imagens
+          docker compose -f $DOCKER_COMPOSE_FILE pull --quiet
+          
+          # 2. Sobrevida ao stack (usando as variáveis carregadas)
+          docker compose -p $PROJECT_NAME -f $DOCKER_COMPOSE_FILE up -d --remove-orphans --wait
 
       - name: 📊 Status Final
         run: |
-          echo "--- Containers Ativos ---"
-          docker compose -p ${{ env.PROJECT_NAME }} ps
+          set -a
+          source .env
+          set +a
+          
+          echo "--- Containers do Projeto: $PROJECT_NAME ---"
+          docker compose -p $PROJECT_NAME ps
           
           echo "--- Consumo de Recursos ---"
-          # Aqui filtramos os stats apenas para os containers deste projeto específico
-          docker stats --no-stream $(docker ps -q --filter "label=com.docker.compose.project=${{ env.PROJECT_NAME }}")
+          # Filtra pelo nome do projeto definido no .env
+          docker stats --no-stream $(docker ps -q --filter "label=com.docker.compose.project=$PROJECT_NAME")
 
-      - name: 🧹 Limpeza de Imagens Antigas
+      - name: 🧹 Limpeza
         if: always()
-        run: |
-          echo "Removendo imagens não utilizadas..."
-          docker image prune -f
+        run: docker image prune -f
