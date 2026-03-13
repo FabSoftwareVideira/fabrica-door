@@ -46,7 +46,7 @@ jobs:
           docker compose -f docker-compose.yml ps
 
           echo "--- Consumo de Recursos ---"
-          docker stats --no-stream fabrica-door
+          docker stats --no-stream fabrica-prod-door
 
       - name: 🧹 Limpeza de Imagens Antigas
         if: always()
