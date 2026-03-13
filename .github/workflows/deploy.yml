@@ -37,7 +37,7 @@ jobs:
           docker compose -f docker-compose.yml --env-file .env pull --quiet
 
           echo "Iniciando serviços de produção..."
-          docker compose -f docker-compose.yml --env-file .env up -d --remove-orphans --wait
+          docker compose -f docker-compose.yml --env-file .env up -d --remove-orphans
 
       # ── 3. MANUTENÇÃO (PÓS-DEPLOY) ──────────────────────────────────────────
       - name: 📊 Status Final
