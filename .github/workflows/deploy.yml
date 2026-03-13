@@ -16,19 +16,70 @@ jobs:
       - name: 📂 Checkout do Código
         uses: actions/checkout@v4
 
-      - name: 🔐 Montar arquivo .env
+      - name: 🔍 Validar Secrets Obrigatórias
+        env:
+          PROD_ENV_FILE: ${{ secrets.PROD_ENV_FILE }}
         run: |
-          echo '${{ secrets.PROD_ENV_FILE }}' > .env
-          echo ".env gerado com sucesso."
+          echo "Verificando secrets obrigatórias..."
+          MISSING=()
+
+          [ -z "$PROD_ENV_FILE" ] && MISSING+=("PROD_ENV_FILE")
+
+          if [ ${#MISSING[@]} -ne 0 ]; then
+            echo "❌ ERRO: As seguintes secrets estão ausentes ou vazias:"
+            for secret in "${MISSING[@]}"; do
+              echo "   - $secret"
+            done
+            echo ""
+            echo "Configure as secrets em: Settings → Secrets and variables → Actions"
+            exit 1
+          fi
+
+          echo "✅ Todas as secrets obrigatórias estão presentes."
+
+      - name: 🔐 Montar arquivo .env
+        env:
+          PROD_ENV_FILE: ${{ secrets.PROD_ENV_FILE }}
+        run: |
+          echo "$PROD_ENV_FILE" > .env
+
+          # Valida que o arquivo não está vazio
+          if [ ! -s .env ]; then
+            echo "❌ ERRO: O arquivo .env foi gerado vazio. Verifique o conteúdo da secret PROD_ENV_FILE."
+            exit 1
+          fi
+
+          echo "✅ .env gerado com $(wc -l < .env) linha(s)."
 
       - name: 🛠️ Validar Ambiente e Arquivos
         run: |
           echo "Verificando arquivos críticos..."
-          test -f docker-compose.yml || (echo "ERRO: docker-compose.yml não encontrado" && exit 1)
-          test -f .env || (echo "ERRO: .env não foi gerado corretamente" && exit 1)
+
+          MISSING_FILES=()
+          [ ! -f docker-compose.yml ] && MISSING_FILES+=("docker-compose.yml")
+          [ ! -f .env ]              && MISSING_FILES+=(".env")
+
+          if [ ${#MISSING_FILES[@]} -ne 0 ]; then
+            echo "❌ ERRO: Arquivos ausentes:"
+            for f in "${MISSING_FILES[@]}"; do
+              echo "   - $f"
+            done
+            exit 1
+          fi
 
           echo "Validando sintaxe do Docker Compose..."
-          docker compose -f docker-compose.yml --env-file .env config -q
+          if ! docker compose -f docker-compose.yml --env-file .env config -q; then
+            echo "❌ ERRO: docker-compose.yml possui erros de sintaxe ou variáveis faltando."
+            exit 1
+          fi
+
+          echo "Verificando se o Docker está acessível..."
+          if ! docker info > /dev/null 2>&1; then
+            echo "❌ ERRO: Docker daemon não está acessível. Verifique permissões do runner."
+            exit 1
+          fi
+
+          echo "✅ Ambiente validado com sucesso."
 
       # ── 2. EXECUÇÃO ─────────────────────────────────────────────────────────
       - name: 🐳 Atualizar e Subir Containers
@@ -39,7 +90,27 @@ jobs:
           echo "Iniciando serviços de produção..."
           docker compose -f docker-compose.yml --env-file .env up -d --remove-orphans
 
-      # ── 3. MANUTENÇÃO (PÓS-DEPLOY) ──────────────────────────────────────────
+      # ── 3. VERIFICAÇÃO PÓS-DEPLOY ────────────────────────────────────────────
+      - name: ⏳ Aguardar Estabilização dos Containers
+        run: |
+          echo "Aguardando 10s para containers estabilizarem..."
+          sleep 10
+
+          echo "Verificando se há containers em estado de erro..."
+          UNHEALTHY=$(docker compose -f docker-compose.yml ps --format json \
+            | grep -E '"State":"(exited|dead|restarting)"' || true)
+
+          if [ -n "$UNHEALTHY" ]; then
+            echo "❌ ERRO: Um ou mais containers não estão saudáveis:"
+            docker compose -f docker-compose.yml ps
+            echo ""
+            echo "--- Logs dos últimos 50 registros ---"
+            docker compose -f docker-compose.yml logs --tail=50
+            exit 1
+          fi
+
+          echo "✅ Todos os containers estão rodando."
+
       - name: 📊 Status Final
         run: |
           echo "--- Containers Ativos ---"
@@ -48,8 +119,15 @@ jobs:
           echo "--- Consumo de Recursos ---"
           docker stats --no-stream fabrica-prod-door
 
+      # ── 4. MANUTENÇÃO ────────────────────────────────────────────────────────
       - name: 🧹 Limpeza de Imagens Antigas
         if: always()
         run: |
           echo "Limpando imagens dangling (sem tag)..."
           docker image prune -f
+
+      - name: 🗑️ Remover .env do Runner
+        if: always()
+        run: |
+          rm -f .env
+          echo "✅ .env removido do runner."
