@@ -9,10 +9,11 @@ services:
     networks:
       - fabrica-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:${PORT}"]
+      test: ["CMD", "curl", "-f", "http://localhost:8000"]  # ✅ porta hardcoded, sem interpolação
       interval: 30s
-      timeout: 5s
-      retries: 3
+      timeout: 10s       # ✅ aumentado de 5s para 10s
+      retries: 5         # ✅ aumentado de 3 para 5
+      start_period: 60s  # ✅ aguarda 60s antes de começar a contar falhas
     restart: unless-stopped
 
 networks:
