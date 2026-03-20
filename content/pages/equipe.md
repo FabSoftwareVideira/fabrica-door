@@ -100,7 +100,7 @@ Aluno do curso de Ciência da Computação do IFC Campus Videira.
 
 ![Ana Paula Deon](/images/equipe/default.webp)
 
-**Estagiária**
+**Estagiárias**
 
 Aluna do curso Técnico em Informática Integrado ao Ensino Médio do IFC Campus Videira.
 
@@ -111,5 +111,3 @@ Aluna do curso Técnico em Informática Integrado ao Ensino Médio do IFC Campus
 **Estagiário**
 
 Aluno do curso Técnico em Informática Integrado ao Ensino Médio do IFC Campus Videira.
-
-### Ana Paula
