@@ -1,6 +1,15 @@
 services:
   pelican:
-    build: .
+    build:
+      context: .
+      args:
+        SITE_NAME: "${SITE_NAME}"
+        SITE_URL: "${SITE_URL}"
+        GOOGLE_ANALYTICS: "${GOOGLE_ANALYTICS}"
+        CONTENT_PATH: "${CONTENT_PATH}"
+        OUTPUT_PATH: "${OUTPUT_PATH}"
+        CONFIG_FILE: "${CONFIG_FILE}"
+        API_KEY: "${API_KEY}"
     container_name: fabrica-prod-door
     ports:
       - "${PORT}:${PORT}"
