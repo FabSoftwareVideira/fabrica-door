@@ -111,3 +111,11 @@ Aluna do curso Técnico em Informática Integrado ao Ensino Médio do IFC Campus
 **Estagiário**
 
 Aluno do curso Técnico em Informática Integrado ao Ensino Médio do IFC Campus Videira.
+
+### Willian Henrique Moreira
+
+![Willian Henrique Moreira](/images/equipe/default.webp)
+
+**Estagiário**
+
+Aluno do curso Técnico em Informática Integrado ao Ensino Médio do IFC Campus Videira.
