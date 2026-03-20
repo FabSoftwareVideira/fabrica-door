@@ -112,7 +112,7 @@ Aluna do curso Técnico em Informática Integrado ao Ensino Médio do IFC Campus
 
 Aluno do curso Técnico em Informática Integrado ao Ensino Médio do IFC Campus Videira.
 
-### Teste 2
+### Teste
 
 ![Willian Henrique Moreira](/images/equipe/default.webp)
 
