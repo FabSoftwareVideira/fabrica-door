@@ -18,7 +18,7 @@ Nossa equipe é coordenada por profissionais com experiência em educação e te
 
 **Professor**
 
-Professor do curso Técnico em Informática Integrado ao Ensino Médio do IFC Campus Videira
+Especialista em Informática e professor do IFC Campus Videira
 
 ### Diego Kroll, Doutor.
 
