@@ -2,7 +2,7 @@ Title: Fábrica de Software - Games
 Slug: games
 Template: project
 Status: published
-Situacao: ongoing
+Situacao: Em Andamento
 Start_Date: Março 2025
 End_Date: 
 Gallery: 
