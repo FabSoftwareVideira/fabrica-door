@@ -41,4 +41,15 @@ Template: page
         </div>
         <a href="/projetos/estagio" class="btn-details">Ver detalhes</a>
     </div>
+
+    <div class="project-card">
+        <h2>Games</h2>
+        <p>Projetos de jogos educacionais desenvolvidos para promover o aprendizado de forma lúdica e interativa.</p>
+        <div class="project-tech">
+            <span>HTML</span>
+            <span>CSS</span>
+            <span>JavaScript</span>
+        </div>
+        <a href="/projetos/games" class="btn-details">Ver detalhes</a>
+    </div>
 </div>
