@@ -60,7 +60,7 @@ Mestre em Ciência da Computação e professor do IFC Campus Videira
 
 Mestre em Ciência da Computação e professor do IFC Campus Videira
 
-## Participantes e Colaboradores
+<!-- ## Participantes e Colaboradores
 
 Conheça os desenvolvedores que fazem ou fizeram parte da nossa equipe.
 
@@ -110,4 +110,4 @@ Aluna do curso Técnico em Informática Integrado ao Ensino Médio do IFC Campus
 
 **Estagiário**
 
-Aluno do curso Técnico em Informática Integrado ao Ensino Médio do IFC Campus Videira.
+Aluno do curso Técnico em Informática Integrado ao Ensino Médio do IFC Campus Videira. -->
