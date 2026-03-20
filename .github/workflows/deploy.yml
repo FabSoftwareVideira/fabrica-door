@@ -10,6 +10,8 @@ jobs:
   deploy:
     name: 🚀 Deploy App
     runs-on: self-hosted
+    env:
+      CONTAINER_NAME: fabrica-prod-door
 
     steps:
       # ── 1. PREPARAÇÃO ───────────────────────────────────────────────────────
@@ -109,6 +111,13 @@ jobs:
             exit 1
           fi
 
+          if ! docker ps --format '{{.Names}}' | grep -Fxq "$CONTAINER_NAME"; then
+            echo "❌ ERRO: Container esperado '$CONTAINER_NAME' não foi encontrado em execução."
+            echo "Containers ativos:"
+            docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'
+            exit 1
+          fi
+
           echo "✅ Todos os containers estão rodando."
 
       - name: 📊 Status Final
@@ -117,7 +126,7 @@ jobs:
           docker compose -f docker-compose.yml ps
 
           echo "--- Consumo de Recursos ---"
-          docker stats --no-stream fabrica-prod-door
+          docker stats --no-stream "$CONTAINER_NAME"
 
       # ── 4. MANUTENÇÃO ────────────────────────────────────────────────────────
       - name: 🧹 Limpeza de Imagens Antigas
