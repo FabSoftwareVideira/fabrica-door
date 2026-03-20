@@ -9,7 +9,8 @@ services:
     networks:
       - fabrica-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:${PORT}"]
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:${PORT}/index.html"]
+      start_period: 20s
       interval: 30s
       timeout: 5s
       retries: 3

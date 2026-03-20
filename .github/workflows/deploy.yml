@@ -90,7 +90,7 @@ jobs:
           docker compose -f docker-compose.yml --env-file .env pull --quiet
 
           echo "Iniciando serviços de produção..."
-          docker compose -f docker-compose.yml --env-file .env up -d --remove-orphans
+          docker compose -f docker-compose.yml --env-file .env up -d --build --remove-orphans
 
       # ── 3. VERIFICAÇÃO PÓS-DEPLOY ────────────────────────────────────────────
       - name: ⏳ Aguardar Estabilização dos Containers
@@ -100,7 +100,7 @@ jobs:
 
           echo "Verificando se há containers em estado de erro..."
           UNHEALTHY=$(docker compose -f docker-compose.yml ps --format json \
-            | grep -E '"State":"(exited|dead|restarting)"' || true)
+            | grep -E '"State":"(exited|dead|restarting|unhealthy)"' || true)
 
           if [ -n "$UNHEALTHY" ]; then
             echo "❌ ERRO: Um ou mais containers não estão saudáveis:"
