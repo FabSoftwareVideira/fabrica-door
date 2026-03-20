@@ -12,6 +12,14 @@ Nossa equipe multidisciplinar reúne profissionais apaixonados por educação e 
 
 Nossa equipe é coordenada por profissionais com experiência em educação e tecnologia.
 
+### Claudionei Lovato Serafini
+
+![Claudionei Lovato Serafini](/images/equipe/claudionei.webp)
+
+**Professor**
+
+Professor do curso Técnico em Informática Integrado ao Ensino Médio do IFC Campus Videira
+
 ### Diego Kroll, Doutor.
 
 ![Diego Kroll](/images/equipe/diego.webp)
@@ -19,14 +27,6 @@ Nossa equipe é coordenada por profissionais com experiência em educação e te
 **Professor**
 
 Doutor em Informática na Educação e professor do IFC Campus Videira
-
-### Leila Lisiane Rossi
-
-![Leila Lisiane Rossi](/images/equipe/leila.webp)
-
-**Professor**
-
-Mestre em Ciência da Computação e professora do IFC Campus Videira
 
 ### Fabio José Rodrigues Pinheiro, MSc.
 
@@ -44,6 +44,14 @@ Mestre em Ciência da Computação e professor do IFC Campus Videira
 
 Mestre em Ciência da Computação e professor do IFC Campus Videira
 
+### Leila Lisiane Rossi
+
+![Leila Lisiane Rossi](/images/equipe/leila.webp)
+
+**Professor**
+
+Mestre em Ciência da Computação e professora do IFC Campus Videira
+
 ### Tiago Lopes Gonçalves, MSc.
 
 ![Tiago Lopes Gonçalves](/images/equipe/tiago-lopes.webp)
@@ -59,6 +67,8 @@ Mestre em Ciência da Computação e professor do IFC Campus Videira
 **Professor**
 
 Mestre em Ciência da Computação e professor do IFC Campus Videira
+
+> Atualizado em: 20 de março de 2026
 
 <!-- ## Participantes e Colaboradores
 
