@@ -60,4 +60,5 @@ Descrição Técnica:
 - Realizar testes com dados reais
 - Implementar filtros por usuários inativos/ativos
 - Melhorar a estética e usabilidade
+- Restrição de chaves (e-mail) quando professor também é supervisor
 - etc.
