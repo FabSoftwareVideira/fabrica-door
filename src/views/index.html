@@ -1,15 +1,15 @@
 {% extends "base.html" %} {% block extra_head %}
 <meta name="description"
   content="Fábrica de Software - Desenvolvendo soluções tecnológicas para transformar a educação" />
-<link rel="stylesheet" href="{{ SITEURL }}/theme/css/index.css">
+<link rel="stylesheet" href="{{ SITEURL }}/assets/css/index.css">
 {% endblock %}
 
 {% block content %}
 <canvas id="particle-canvas"></canvas>
 <section class="hero">
   <!-- <video class="hero-video" autoplay loop muted playsinline
-    poster="{{ THEME_STATIC_URL }}/videos/video-hero-background_poster.webp" preload="none">
-    <source src="{{ THEME_STATIC_URL }}/videos/video-hero-background.mp4" type="video/mp4">
+    poster="{{ SITEURL }}/assets/videos/video-hero-background_poster.webp" preload="none">
+    <source src="{{ SITEURL }}/assets/videos/video-hero-background.mp4" type="video/mp4">
     Seu navegador não suporta vídeo HTML5.
   </video> -->
   <div class="hero-overlay">
@@ -116,9 +116,9 @@
 
 <!-- Seção com vídeo de fundo -->
 <section class="video-section">
-  <video class="video-background" autoplay loop muted playsinline poster="{{ SITEURL }}/videos/background_poster.webp"
-    preload="none">
-    <source src="{{ SITEURL }}/videos/background.mp4" type="video/mp4">
+  <video class="video-background" autoplay loop muted playsinline
+    poster="{{ SITEURL }}/assets/videos/background_poster.webp" preload="none">
+    <source src="{{ SITEURL }}/assets/videos/background.mp4" type="video/mp4">
   </video>
 
   <div class="video-overlay">
@@ -132,7 +132,7 @@
 </section>
 
 {% block extra_js %}
-<script src="{{ SITEURL }}/theme/js/index.js"></script>
+<script src="{{ SITEURL }}/assets/js/index.js"></script>
 {% endblock %}
 
 {% if page %} {{ page.content | safe }} {% endif %} {% endblock %}

@@ -21,9 +21,9 @@ nunjucks.configure(path.join(site.rootDir, "src", "views"), {
 
 app.set("view engine", "html");
 
-app.use("/theme", express.static(path.join(site.rootDir, "public", "theme")));
-app.use("/images", express.static(path.join(site.rootDir, "public", "assets", "images")));
-app.use("/videos", express.static(path.join(site.rootDir, "public", "assets", "videos")));
+app.use("/assets", express.static(path.join(site.rootDir, "public", "assets")));
+// app.use("/images", express.static(path.join(site.rootDir, "public", "assets", "images")));
+// app.use("/videos", express.static(path.join(site.rootDir, "public", "assets", "videos")));
 
 function renderPage(res, currentPath, template, page) {
     res.render(template, {

@@ -15,7 +15,7 @@ endif %}{{ SITENAME }} {% endblock %} {% block extra_head %}
 </script>
 
 <!-- Script de contato personalizado -->
-<script src="{{ SITEURL }}/theme/js/contact.js"></script>
+<script src="{{ SITEURL }}/assets/js/contact.js"></script>
 {% endblock %} {% block content %} {% if page %} {% if page.show_header is not
 defined or page.show_header != false %}
 <div class="page-header">
@@ -28,7 +28,7 @@ defined or page.show_header != false %}
 <div class="container">{{ page.content | safe }}</div>
 
 <!-- Script do mapa -->
-<script src="{{ SITEURL }}/theme/js/map.js"></script>
+<script src="{{ SITEURL }}/assets/js/map.js"></script>
 {% else %}
 <div class="container">
   <div class="page-content">

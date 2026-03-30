@@ -19,8 +19,8 @@
   <meta property="og:image" content="{{ SITEURL }}/images/logo.svg">
   <meta property="og:url" content="{{ SITEURL }}/contato.html">
   <title>{% block title %}{{ SITENAME }}{% endblock %}</title>
-  <link rel="stylesheet" href="{{ SITEURL }}/theme/css/style.css" />
-  <link rel="stylesheet" href="{{ SITEURL }}/theme/css/projects.css" />
+  <link rel="stylesheet" href="{{ SITEURL }}/assets/css/style.css" />
+  <link rel="stylesheet" href="{{ SITEURL }}/assets/css/projects.css" />
   <link rel="preload" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" as="style"
     onload="this.rel='stylesheet'">
   <!-- Adicionando Font Awesome para ícones -->
@@ -36,7 +36,7 @@
     <div class="container">
       <div class="logo">
         <a href="{{ SITEURL }}/">
-          <img src="{{ SITEURL }}/images/logo.svg" alt="{{ SITENAME }}" loading="lazy" />
+          <img src="{{ SITEURL }}/assets/images/logo.svg" alt="{{ SITENAME }}" loading="lazy" />
         </a>
       </div>
       <button class="hamburger" aria-label="Toggle menu">
@@ -93,8 +93,8 @@
     </div>
   </footer>
 
-  <script src="{{ SITEURL }}/theme/js/emailTemplate.js"></script>
-  <script src="{{ SITEURL }}/theme/js/main.js"></script>
+  <script src="{{ SITEURL }}/assets/js/emailTemplate.js"></script>
+  <script src="{{ SITEURL }}/assets/js/main.js"></script>
   {% block extra_scripts %}{% endblock %}
 
   <!-- <div id="cookie-banner">

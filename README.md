@@ -18,10 +18,7 @@ Projeto web migrado para Node.js com Express e Nunjucks, reaproveitando o tema f
 - Dados e metadados dos projetos: `src/data/projects.js`
 - Templates do tema: `src/views`
 - Assets estáticos:
-	- `public/theme`
-	- `public/assets/images`
-	- `public/assets/videos`
-
+  - `public/assets`
 ## Execução local sem Docker
 
 1. Copie `.env.sample` para `.env`.
