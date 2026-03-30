@@ -25,16 +25,16 @@ endif %}{{ SITENAME }} {% endblock %} {% block content %} {% if page %}
       </div>
       {% endif %}
 
-      <div class="project-description">{{ page.content }}</div>
+      <div class="project-description">{{ page.content | safe }}</div>
 
-      {% if page.gallery %}
+      {% if page.galleryList and page.galleryList.length %}
       <div class="project-gallery">
         <h2>Galeria do Projeto</h2>
         <div class="gallery-container">
-          {% for image in page.gallery.split(',') %}
+          {% for image in page.galleryList %}
           <div class="gallery-item">
-            <a href="{{ SITEURL }}/{{ image.strip() }}" data-lightbox="project-gallery">
-              <img src="{{ SITEURL }}/{{ image.strip() }}" alt="Imagem do projeto {{ page.title }}" />
+            <a href="{{ SITEURL }}/{{ image }}" data-lightbox="project-gallery">
+              <img src="{{ SITEURL }}/{{ image }}" alt="Imagem do projeto {{ page.title }}" />
             </a>
           </div>
           {% endfor %}
@@ -62,30 +62,30 @@ endif %}{{ SITENAME }} {% endblock %} {% block content %} {% if page %}
       </div>
       {% endif %}
 
-      {% if page.technologies %}
+      {% if page.technologiesList and page.technologiesList.length %}
       <div class="project-card">
         <h3>Tecnologias</h3>
         <ul class="technologies-list">
-          {% for tech in page.technologies.split(',') %}
-          <li class="technology-item">{{ tech.strip() }}</li>
+          {% for tech in page.technologiesList %}
+          <li class="technology-item">{{ tech }}</li>
           {% endfor %}
         </ul>
       </div>
-      {% endif %} {% if page.members %}
+      {% endif %} {% if page.membersList and page.membersList.length %}
       <div class="project-card">
         <h3>Equipe</h3>
         <ul class="members-list">
-          {% for member in page.members.split(',') %}
-          <li class="member-item">{{ member.strip() }}</li>
+          {% for member in page.membersList %}
+          <li class="member-item">{{ member }}</li>
           {% endfor %}
         </ul>
       </div>
-      {% endif %} {% if page.key_features %}
+      {% endif %} {% if page.key_featuresList and page.key_featuresList.length %}
       <div class="project-card">
         <h3>Principais Funcionalidades</h3>
         <ul class="features-list">
-          {% for feature in page.key_features.split(',') %}
-          <li class="funcionalidade-item">{{ feature.strip() }}</li>
+          {% for feature in page.key_featuresList %}
+          <li class="funcionalidade-item">{{ feature }}</li>
           {% endfor %}
         </ul>
       </div>

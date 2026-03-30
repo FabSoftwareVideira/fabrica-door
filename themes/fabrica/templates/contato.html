@@ -1,10 +1,7 @@
 {% extends "base.html" %} {% block title %} {% if page %}{{ page.title }} - {%
 endif %}{{ SITENAME }} {% endblock %} {% block extra_head %}
 <!-- CSS para o mapa -->
-<link
-  rel="stylesheet"
-  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
 <!-- JavaScript para o mapa -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -20,7 +17,7 @@ endif %}{{ SITENAME }} {% endblock %} {% block extra_head %}
 <!-- Script de contato personalizado -->
 <script src="{{ SITEURL }}/theme/js/contact.js"></script>
 {% endblock %} {% block content %} {% if page %} {% if page.show_header is not
-defined or page.show_header|string|lower != "false" %}
+defined or page.show_header != false %}
 <div class="page-header">
   <div class="container">
     <h1>{{ page.title }}</h1>
@@ -28,7 +25,7 @@ defined or page.show_header|string|lower != "false" %}
 </div>
 {% endif %}
 
-<div class="container">{{ page.content }}</div>
+<div class="container">{{ page.content | safe }}</div>
 
 <!-- Script do mapa -->
 <script src="{{ SITEURL }}/theme/js/map.js"></script>

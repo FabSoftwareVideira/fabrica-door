@@ -135,4 +135,4 @@
 <script src="{{ SITEURL }}/theme/js/index.js"></script>
 {% endblock %}
 
-{% if page %} {{ page.content }} {% endif %} {% endblock %}
+{% if page %} {{ page.content | safe }} {% endif %} {% endblock %}

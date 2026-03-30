@@ -7,7 +7,8 @@ endblock %} {% block extra_head %}
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 50vh; /* Centraliza verticalmente na tela */
+    height: 50vh;
+    /* Centraliza verticalmente na tela */
     text-align: center;
   }
 
@@ -15,7 +16,8 @@ endblock %} {% block extra_head %}
     width: 40px;
     height: 40px;
     border: 4px solid rgba(0, 0, 0, 0.1);
-    border-top: 4px solid var(--primary-color); /* Use sua cor principal */
+    border-top: 4px solid var(--primary-color);
+    /* Use sua cor principal */
     border-radius: 50%;
     animation: spin 1s linear infinite;
     margin-bottom: 15px;
@@ -31,12 +33,13 @@ endblock %} {% block extra_head %}
     0% {
       transform: rotate(0deg);
     }
+
     100% {
       transform: rotate(360deg);
     }
   }
 </style>
-{% endblock %} { {% block content %}
+{% endblock %} {% block content %}
 <div class="page-header">
   <div class="container">
     <h1>{{ page.title }}</h1>
@@ -47,7 +50,7 @@ endblock %} {% block extra_head %}
   <div class="loading-indicator">
     <div class="spinner"></div>
   </div>
-  <div class="page-content" style="display: none">{{ page.content }}</div>
+  <div class="page-content" style="display: none">{{ page.content | safe }}</div>
 </div>
 
 <script>

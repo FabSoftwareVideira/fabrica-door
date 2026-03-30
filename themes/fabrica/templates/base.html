@@ -5,16 +5,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  {% if article %}
-  <meta name="description" content="{{ article.summary|striptags|truncate(150) }}" />
-  <meta name="keywords" content="{% for tag in article.tags %}{{ tag }}, {% endfor %}" />
-  {% elif page %}
-  <meta name="description" content="{{ page.summary|striptags|truncate(150) }}" />
-  <meta name="keywords" content="contato, fábrica de software, desenvolvimento, tecnologia">
+  {% if page and page.summary %}
+  <meta name="description" content="{{ page.summary }}" />
   {% else %}
-  <meta name="description" content="{{ SITENAME }} - {{ SITESUBTITLE }}" />
-  <meta name="keywords" content="contato, fábrica de software, desenvolvimento, tecnologia">
+  <meta name="description" content="{{ SITENAME }}" />
   {% endif %}
+  <meta name="keywords" content="contato, fábrica de software, desenvolvimento, tecnologia">
 
   <meta name="author" content="Fábrica de Software">
   <meta property="og:title" content="Contato - Fábrica de Software">
@@ -50,11 +46,10 @@
       </button>
       <nav role="navigation">
         <ul>
-          {% for title, link in MENUITEMS %}
+          {% for item in MENUITEMS %}
           <li>
-            <a href="{{ link }}" {% if page and page.url==link|replace(SITEURL ~ '/' , '' ) or article and
-              article.url==link|replace(SITEURL ~ '/' , '' ) %}class="active" {% endif %}>
-              {{ title }}
+            <a href="{{ item.link }}" {% if currentPath==item.path %}class="active" {% endif %}>
+              {{ item.title }}
             </a>
           </li>
           {% endfor %}
@@ -86,10 +81,10 @@
         <div class="footer-social">
           <h3>Siga-nos</h3>
           <ul>
-            {% for icon, url in SOCIAL_LINKS%}
+            {% for social in SOCIAL_LINKS %}
             <li>
-              <a href="{{ url }}" target="_blank" rel="noopener noreferrer">
-                <i class="fab fa-{{ icon }}"></i>
+              <a href="{{ social.url }}" target="_blank" rel="noopener noreferrer">
+                <i class="fab fa-{{ social.icon }}"></i>
               </a>
               {% endfor %}
           </ul>
