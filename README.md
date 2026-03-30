@@ -16,11 +16,11 @@ Projeto web migrado para Node.js com Express e Nunjucks, reaproveitando o tema f
 - Conteúdo dos projetos: `content-html/projects/*.html`
 - Dados e metadados das páginas: `src/data/pages.js`
 - Dados e metadados dos projetos: `src/data/projects.js`
-- Templates do tema: `themes/fabrica/templates`
+- Templates do tema: `src/views`
 - Assets estáticos:
-  - `themes/fabrica/static`
-  - `content/images`
-  - `content/videos`
+	- `public/theme`
+	- `public/assets/images`
+	- `public/assets/videos`
 
 ## Execução local sem Docker
 

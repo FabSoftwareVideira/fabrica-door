@@ -1,0 +1,101 @@
+{% extends "base.html" %} {% block title %} {% if page %}{{ page.title }} - {%
+endif %}{{ SITENAME }} {% endblock %} {% block content %} {% if page %}
+<div class="project-container">
+  <header class="project-header">
+    <h1 class="project-title">{{ page.title }}</h1>
+    <div class="project-meta">
+      <span
+        class="project-status {% if page.situacao == 'Em Andamento' %}status-ongoing{% endif %} {% if page.situacao == 'Concluído' %}status-completed{% endif %} {% if page.situacao == 'Em Planejamento' %}status-planned{% endif %}">
+        {{ page.situacao }}
+      </span>
+      <span class="project-dates">
+        <i class="fas fa-calendar-alt"></i>
+        Início: {{ page.start_date }} {% if page.end_date %}
+        <span class="project-end-date"> | Conclusão: {{ page.end_date }}</span>
+        {% endif %}
+      </span>
+    </div>
+  </header>
+
+  <div class="project-content-wrapper">
+    <div class="project-main-content">
+      {% if page.featured_image %}
+      <div class="project-featured-image">
+        <img src="{{ SITEURL }}/{{ page.featured_image }}" alt="{{ page.title }}" />
+      </div>
+      {% endif %}
+
+      <div class="project-description">{{ page.content | safe }}</div>
+
+      {% if page.galleryList and page.galleryList.length %}
+      <div class="project-gallery">
+        <h2>Galeria do Projeto</h2>
+        <div class="gallery-container">
+          {% for image in page.galleryList %}
+          <div class="gallery-item">
+            <a href="{{ SITEURL }}/{{ image }}" data-lightbox="project-gallery">
+              <img src="{{ SITEURL }}/{{ image }}" alt="Imagem do projeto {{ page.title }}" />
+            </a>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+    <aside class="project-sidebar">
+      {% if page.github_url %}
+      <div class="project-card">
+        <h3>Repositório</h3>
+        <a href="{{ page.github_url }}" class="github-link" target="_blank">
+          <i class="fab fa-github"></i> Ver no GitHub
+        </a>
+      </div>
+      {% endif %}
+
+      {% if page.published_url %}
+      <div class="project-card">
+        <h3>Disponibilidade</h3>
+        <a href="{{ page.published_url }}" class="external-link" target="_blank">
+          <i class="fa-solid fa-link"></i> Acessar
+        </a>
+      </div>
+      {% endif %}
+
+      {% if page.technologiesList and page.technologiesList.length %}
+      <div class="project-card">
+        <h3>Tecnologias</h3>
+        <ul class="technologies-list">
+          {% for tech in page.technologiesList %}
+          <li class="technology-item">{{ tech }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %} {% if page.membersList and page.membersList.length %}
+      <div class="project-card">
+        <h3>Equipe</h3>
+        <ul class="members-list">
+          {% for member in page.membersList %}
+          <li class="member-item">{{ member }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %} {% if page.key_featuresList and page.key_featuresList.length %}
+      <div class="project-card">
+        <h3>Principais Funcionalidades</h3>
+        <ul class="features-list">
+          {% for feature in page.key_featuresList %}
+          <li class="funcionalidade-item">{{ feature }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+    </aside>
+  </div>
+</div>
+{% else %}
+<div class="container">
+  <h1>Página não encontrada</h1>
+  <p>A página solicitada não está disponível.</p>
+</div>
+{% endif %} {% endblock %}

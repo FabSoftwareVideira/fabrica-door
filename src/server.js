@@ -13,7 +13,7 @@ const port = Number(process.env.PORT || 8000);
 const pages = createPages(site.rootDir);
 const { bySlug: projectsBySlug } = createProjects(site.rootDir);
 
-nunjucks.configure(path.join(site.rootDir, "themes", "fabrica", "templates"), {
+nunjucks.configure(path.join(site.rootDir, "src", "views"), {
     autoescape: true,
     express: app,
     noCache: process.env.NODE_ENV !== "production"
@@ -21,7 +21,7 @@ nunjucks.configure(path.join(site.rootDir, "themes", "fabrica", "templates"), {
 
 app.set("view engine", "html");
 
-app.use("/theme", express.static(path.join(site.rootDir, "themes", "fabrica", "static")));
+app.use("/theme", express.static(path.join(site.rootDir, "public", "theme")));
 app.use("/images", express.static(path.join(site.rootDir, "public", "assets", "images")));
 app.use("/videos", express.static(path.join(site.rootDir, "public", "assets", "videos")));
 
