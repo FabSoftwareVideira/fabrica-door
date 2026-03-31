@@ -2,16 +2,18 @@ const path = require("path");
 const express = require("express");
 const nunjucks = require("nunjucks");
 const site = require("./config/site");
-const createPages = require("./data/pages");
-const createProjects = require("./data/projects");
+const createPageService = require("./services/pageService");
+const createProjectService = require("./services/projectService");
 const createSiteController = require("./controllers/siteController");
 const createSiteRoutes = require("./routes/siteRoutes");
 
 function createApp() {
     const app = express();
 
-    const pages = createPages(site.rootDir);
-    const { bySlug: projectsBySlug } = createProjects(site.rootDir);
+    const pageService = createPageService(site.rootDir);
+    const projectService = createProjectService(site.rootDir);
+    const pages = pageService.getAllPages();
+    const projectsBySlug = projectService.getProjectsBySlug();
 
     nunjucks.configure(path.join(site.rootDir, "src", "views"), {
         autoescape: true,

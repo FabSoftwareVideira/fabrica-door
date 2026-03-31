@@ -2,7 +2,7 @@
     "name": "fabrica-door",
     "version": "2.0.0",
     "private": true,
-    "description": "Site da Fábrica de Software do IFC Videira em Node.js",
+    "description": "Site da Fábrica de Software do IFC Videira",
     "scripts": {
         "start": "node src/server.js",
         "dev": "node --watch src/server.js"
