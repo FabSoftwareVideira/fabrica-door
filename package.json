@@ -5,14 +5,19 @@
     "description": "Site da Fábrica de Software do IFC Videira",
     "scripts": {
         "start": "node src/server.js",
-        "dev": "node --watch src/server.js"
+        "dev": "node --watch src/server.js",
+        "hash-password": "node src/db/hashPassword.js"
     },
     "engines": {
         "node": ">=20"
     },
     "dependencies": {
+        "bcryptjs": "^2.4.3",
+        "cookie-parser": "^1.4.7",
         "dotenv": "^16.4.5",
         "express": "^4.21.2",
-        "nunjucks": "^3.2.4"
+        "jsonwebtoken": "^9.0.2",
+        "nunjucks": "^3.2.4",
+        "pg": "^8.13.3"
     }
 }

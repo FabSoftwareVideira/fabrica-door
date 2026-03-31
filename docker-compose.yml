@@ -15,7 +15,34 @@ services:
       - /app/node_modules
     networks:
       - fabrica-network
+    depends_on:
+      db:
+        condition: service_healthy
     restart: on-failure
+
+  db:
+    image: postgres:16-alpine
+    container_name: fabrica-dev-db
+    environment:
+      POSTGRES_DB: ${PGDATABASE:-fabrica_door}
+      POSTGRES_USER: ${PGUSER:-postgres}
+      POSTGRES_PASSWORD: ${PGPASSWORD:-postgres}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./src/db/migrations:/docker-entrypoint-initdb.d
+    networks:
+      - fabrica-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${PGUSER:-postgres} -d ${PGDATABASE:-fabrica_door}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
 
 networks:
   fabrica-network:

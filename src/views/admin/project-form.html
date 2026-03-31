@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page.title }} - {{ SITENAME }}{% endblock %}
+
+{% block content %}
+<div class="container" style="padding: 40px 0; max-width: 900px;">
+    <h1>{{ page.title }}</h1>
+    <p><a href="/admin/projetos">← Voltar para lista</a></p>
+
+    {% if errorMessage %}
+    <div style="background: #fbe9e9; color: #8a1f1f; padding: 10px 14px; border-radius: 6px; margin: 16px 0;">
+        {{ errorMessage }}
+    </div>
+    {% endif %}
+
+    <form method="post" action="{{ formAction }}" style="display: grid; gap: 14px; margin-top: 16px;">
+        <label for="title">Título *</label>
+        <input id="title" name="title" required value="{{ formProject.title or '' }}" />
+
+        <label for="slug">Slug (opcional, gerado pelo título)</label>
+        <input id="slug" name="slug" value="{{ formProject.slug or '' }}" />
+
+        <label for="situacao">Situação</label>
+        <input id="situacao" name="situacao" value="{{ formProject.situacao or '' }}" />
+
+        <label for="start_date">Data de início</label>
+        <input id="start_date" name="start_date" value="{{ formProject.start_date or '' }}" />
+
+        <label for="end_date">Data de conclusão</label>
+        <input id="end_date" name="end_date" value="{{ formProject.end_date or '' }}" />
+
+        <label for="featured_image">Imagem destacada (caminho)</label>
+        <input id="featured_image" name="featured_image" value="{{ formProject.featured_image or '' }}" />
+
+        <label for="github_url">URL GitHub</label>
+        <input id="github_url" name="github_url" value="{{ formProject.github_url or '' }}" />
+
+        <label for="published_url">URL publicada</label>
+        <input id="published_url" name="published_url" value="{{ formProject.published_url or '' }}" />
+
+        <label for="gallery_list">Galeria (1 caminho por linha)</label>
+        <textarea id="gallery_list" name="gallery_list" rows="4">{{ formProject.gallery_list or '' }}</textarea>
+
+        <label for="technologies_list">Tecnologias (1 item por linha)</label>
+        <textarea id="technologies_list" name="technologies_list"
+            rows="4">{{ formProject.technologies_list or '' }}</textarea>
+
+        <label for="members_list">Equipe (1 item por linha)</label>
+        <textarea id="members_list" name="members_list" rows="4">{{ formProject.members_list or '' }}</textarea>
+
+        <label for="key_features_list">Funcionalidades (1 item por linha)</label>
+        <textarea id="key_features_list" name="key_features_list"
+            rows="4">{{ formProject.key_features_list or '' }}</textarea>
+
+        <label for="content">Conteúdo HTML</label>
+        <textarea id="content" name="content" rows="12">{{ formProject.content or '' }}</textarea>
+
+        <button type="submit" class="btn-primary" style="width: fit-content;">
+            {% if formMode == "edit" %}Salvar alterações{% else %}Criar projeto{% endif %}
+        </button>
+    </form>
+</div>
+{% endblock %}

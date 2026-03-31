@@ -1,4 +1,5 @@
 const express = require("express");
+const asyncHandler = require("../middlewares/asyncHandler");
 
 module.exports = function createSiteRoutes(controller) {
     const router = express.Router();
@@ -9,7 +10,7 @@ module.exports = function createSiteRoutes(controller) {
     router.get("/projetos", controller.projetos);
     router.get("/equipe", controller.equipe);
     router.get("/contato", controller.contato);
-    router.get("/projetos/:slug", controller.projetoPorSlug);
+    router.get("/projetos/:slug", asyncHandler(controller.projetoPorSlug));
 
     return router;
 };

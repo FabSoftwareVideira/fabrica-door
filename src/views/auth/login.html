@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Login - {{ SITENAME }}{% endblock %}
+
+{% block content %}
+<div class="container" style="padding: 40px 0; max-width: 500px;">
+    <h1>Login administrativo</h1>
+    <p>Entre com suas credenciais para gerenciar os projetos.</p>
+
+    {% if errorMessage %}
+    <div style="background: #fbe9e9; color: #8a1f1f; padding: 10px 14px; border-radius: 6px; margin-bottom: 16px;">
+        {{ errorMessage }}
+    </div>
+    {% endif %}
+
+    <form method="post" action="/auth/login" style="display: grid; gap: 12px;">
+        <label for="email">E-mail</label>
+        <input id="email" name="email" type="email" required value="{{ formEmail or '' }}" />
+
+        <label for="password">Senha</label>
+        <input id="password" name="password" type="password" required />
+
+        <button class="btn-primary" type="submit" style="width: fit-content;">Entrar</button>
+    </form>
+</div>
+{% endblock %}
