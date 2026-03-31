@@ -77,7 +77,7 @@ module.exports = function createProjects(rootDir) {
             start_date: "Março 2025",
             end_date: "Março 2025",
             galleryList: ["images/projects/fabrica/logo.svg", "images/projects/fabrica/fabrica-tela.png"],
-            github_url: "https://github.com/fabricioifc/fabrica-door",
+            github_url: "https://github.com/FabSoftwareVideira/fabrica-door",
             published_url: "https://fabrica.videira.ifc.edu.br",
             technologiesList: ["HTML", "CSS", "JavaScript", "Node.js", "Express", "Nunjucks"],
             membersList: ["Fabricio Bizotto (Professor)"],
