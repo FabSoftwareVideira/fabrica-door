@@ -21,11 +21,14 @@ module.exports = function createSiteController({ site, pages, projectService }) 
         });
     }
 
-    function projetos(_req, res) {
+    async function projetos(_req, res) {
+        const projects = await projectService.getAllProjects();
+
         renderPage(res, site, {
             currentPath: "/projetos",
-            template: pages.projetos.template,
-            page: pages.projetos
+            template: "projects.html",
+            page: pages.projetos,
+            extra: { projects }
         });
     }
 

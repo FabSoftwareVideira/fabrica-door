@@ -19,11 +19,6 @@ endif %}{{ SITENAME }} {% endblock %} {% block content %} {% if page %}
 
   <div class="project-content-wrapper">
     <div class="project-main-content">
-      {% if page.featured_image %}
-      <div class="project-featured-image">
-        <img src="{{ SITEURL }}/{{ page.featured_image }}" alt="{{ page.title }}" />
-      </div>
-      {% endif %}
 
       <div class="project-description">{{ page.content | safe }}</div>
 
@@ -88,6 +83,14 @@ endif %}{{ SITENAME }} {% endblock %} {% block content %} {% if page %}
           <li class="funcionalidade-item">{{ feature }}</li>
           {% endfor %}
         </ul>
+      </div>
+      {% endif %}
+      {% if page.featured_image %}
+      <div class="project-card">
+        <h3>Imagem do Projeto</h3>
+        <div class="project-featured-image">
+          <img src="{{ SITEURL }}/{{ page.featured_image }}" alt="{{ page.title }}" />
+        </div>
       </div>
       {% endif %}
     </aside>
