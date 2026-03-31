@@ -12,8 +12,8 @@ Projeto web migrado para Node.js com Express e Nunjucks, reaproveitando o tema f
 
 ## Estrutura de conteúdo
 
-- Conteúdo das páginas: `content-html/pages/*.html`
-- Conteúdo dos projetos: `content-html/projects/*.html`
+- Conteúdo das páginas: `public/pages/*.html`
+- Conteúdo dos projetos: `public/projects/*.html`
 - Dados e metadados das páginas: `src/data/pages.js`
 - Dados e metadados dos projetos: `src/data/projects.js`
 - Templates do tema: `src/views`
