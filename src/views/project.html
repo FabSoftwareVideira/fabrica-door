@@ -2,18 +2,30 @@
 endif %}{{ SITENAME }} {% endblock %} {% block content %} {% if page %}
 <div class="project-container">
   <header class="project-header">
-    <h1 class="project-title">{{ page.title }}</h1>
-    <div class="project-meta">
-      <span
-        class="project-status {% if page.situacao == 'Em Andamento' %}status-ongoing{% endif %} {% if page.situacao == 'Concluído' %}status-completed{% endif %} {% if page.situacao == 'Em Planejamento' %}status-planned{% endif %}">
-        {{ page.situacao }}
-      </span>
-      <span class="project-dates">
-        <i class="fas fa-calendar-alt"></i>
-        Início: {{ page.start_date }} {% if page.end_date %}
-        <span class="project-end-date"> | Conclusão: {{ page.end_date }}</span>
-        {% endif %}
-      </span>
+    <div class="project-header-content">
+      <h1 class="project-title">{{ page.title }}</h1>
+
+      <div class="project-meta">
+        <span
+          class="project-status {% if page.situacao == 'Em Andamento' %}status-ongoing{% endif %} {% if page.situacao == 'Concluído' %}status-completed{% endif %} {% if page.situacao == 'Em Planejamento' %}status-planned{% endif %}">
+          {{ page.situacao }}
+        </span>
+
+        <span class="project-dates">
+          <i class="fas fa-calendar-alt"></i>
+          Início: {{ page.start_date }} {% if page.end_date %}
+          <span class="project-end-date"> | Conclusão: {{ page.end_date }}</span>
+          {% endif %}
+        </span>
+      </div>
+    </div>
+
+    <div class="project-image">
+      {% if page.featured_image %}
+      <img src="{{ SITEURL }}/{{ page.featured_image }}" alt="Imagem do projeto {{ page.title }}" />
+      {% else %}
+      <img src="{{ SITEURL }}/images/default-project.png" alt="Imagem padrão para projetos" />
+      {% endif %}
     </div>
   </header>
 
