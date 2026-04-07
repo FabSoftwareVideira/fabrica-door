@@ -2,8 +2,10 @@ name: Deploy fabrica-door
 
 on:
   push:
-    branches:
-      - main
+    # branches:
+    #   - main
+    tags:
+      - 'v*' # Dispara para qualquer tag que comece com 'v' (ex: v1.0, v2.4.5)
   workflow_dispatch:
 
 jobs:
@@ -17,6 +19,8 @@ jobs:
       # ── 1. PREPARAÇÃO ───────────────────────────────────────────────────────
       - name: 📂 Checkout do Código
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Garante que as tags sejam baixadas caso precise usá-las no build
 
       - name: 🔍 Validar Secrets Obrigatórias
         env:
@@ -45,9 +49,8 @@ jobs:
         run: |
           echo "$PROD_ENV_FILE" > .env
 
-          # Valida que o arquivo não está vazio
           if [ ! -s .env ]; then
-            echo "❌ ERRO: O arquivo .env foi gerado vazio. Verifique o conteúdo da secret PROD_ENV_FILE."
+            echo "❌ ERRO: O arquivo .env foi gerado vazio."
             exit 1
           fi
 
@@ -59,7 +62,7 @@ jobs:
 
           MISSING_FILES=()
           [ ! -f docker-compose.yml ] && MISSING_FILES+=("docker-compose.yml")
-          [ ! -f .env ]              && MISSING_FILES+=(".env")
+          [ ! -f .env ]               && MISSING_FILES+=(".env")
 
           if [ ${#MISSING_FILES[@]} -ne 0 ]; then
             echo "❌ ERRO: Arquivos ausentes:"
@@ -71,72 +74,55 @@ jobs:
 
           echo "Validando sintaxe do Docker Compose..."
           if ! docker compose -f docker-compose.yml --env-file .env config -q; then
-            echo "❌ ERRO: docker-compose.yml possui erros de sintaxe ou variáveis faltando."
+            echo "❌ ERRO: docker-compose.yml possui erros de sintaxe."
             exit 1
           fi
 
-          echo "Verificando se o Docker está acessível..."
           if ! docker info > /dev/null 2>&1; then
-            echo "❌ ERRO: Docker daemon não está acessível. Verifique permissões do runner."
+            echo "❌ ERRO: Docker daemon não está acessível."
             exit 1
           fi
 
-          echo "✅ Ambiente validado com sucesso."
+          echo "✅ Ambiente validado."
 
       # ── 2. EXECUÇÃO ─────────────────────────────────────────────────────────
       - name: 🐳 Atualizar e Subir Containers
         run: |
-          echo "Puxando imagens novas (se houver)..."
+          echo "Evento gatilho: ${{ github.event_name }}"
+          
+          # Se for tag, você pode usar ${{ github.ref_name }} para logar a versão
+          echo "Subindo versão: ${{ github.ref_name }}"
+
+          echo "Puxando imagens novas..."
           docker compose -f docker-compose.yml --env-file .env pull --quiet
 
           echo "Iniciando serviços de produção..."
+          # O --build garante que a imagem local seja reconstruída com o código da nova tag/push
           docker compose -f docker-compose.yml --env-file .env up -d --build --remove-orphans
 
       # ── 3. VERIFICAÇÃO PÓS-DEPLOY ────────────────────────────────────────────
-      - name: ⏳ Aguardar Estabilização dos Containers
+      - name: ⏳ Aguardar Estabilização
         run: |
-          echo "Aguardando 10s para containers estabilizarem..."
           sleep 10
-
-          echo "Verificando se há containers em estado de erro..."
           UNHEALTHY=$(docker compose -f docker-compose.yml ps --format json \
             | grep -E '"State":"(exited|dead|restarting|unhealthy)"' || true)
 
           if [ -n "$UNHEALTHY" ]; then
-            echo "❌ ERRO: Um ou mais containers não estão saudáveis:"
+            echo "❌ ERRO: Containers não saudáveis."
             docker compose -f docker-compose.yml ps
-            echo ""
-            echo "--- Logs dos últimos 50 registros ---"
             docker compose -f docker-compose.yml logs --tail=50
             exit 1
           fi
 
           if ! docker ps --format '{{.Names}}' | grep -Fxq "$CONTAINER_NAME"; then
-            echo "❌ ERRO: Container esperado '$CONTAINER_NAME' não foi encontrado em execução."
-            echo "Containers ativos:"
-            docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'
+            echo "❌ ERRO: Container '$CONTAINER_NAME' não encontrado."
             exit 1
           fi
 
-          echo "✅ Todos os containers estão rodando."
-
-      - name: 📊 Status Final
-        run: |
-          echo "--- Containers Ativos ---"
-          docker compose -f docker-compose.yml ps
-
-          echo "--- Consumo de Recursos ---"
-          docker stats --no-stream "$CONTAINER_NAME"
-
       # ── 4. MANUTENÇÃO ────────────────────────────────────────────────────────
-      - name: 🧹 Limpeza de Imagens Antigas
+      - name: 🧹 Limpeza
         if: always()
         run: |
-          echo "Limpando imagens dangling (sem tag)..."
           docker image prune -f
-
-      - name: 🗑️ Remover .env do Runner
-        if: always()
-        run: |
           rm -f .env
-          echo "✅ .env removido do runner."
+          echo "✅ Limpeza concluída."
