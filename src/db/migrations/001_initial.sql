@@ -36,5 +36,5 @@ CREATE TABLE IF NOT EXISTS projects (
 --   node -e "const b=require('bcryptjs');b.hash('suasenha',12).then(h=>console.log(h))"
 -- ----------------------------------------------------------------
 INSERT INTO admin_users (email, password_hash)
-VALUES ('admin@fabrica.edu.br', '$2a$12$PLACEHOLDER_HASH')
+VALUES ('fabricio.bizotto@ifc.edu.br', '$2a$12$UmQIx50AFpjzNPWzL.l76uQRTI4r6VSfih5euONgmOa9dX68EGieK')
 ON CONFLICT (email) DO NOTHING;

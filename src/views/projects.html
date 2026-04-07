@@ -11,30 +11,32 @@
 
 <div class="container">
   {% if projects and projects.length %}
-  <div class="projects-grid" style="margin-top: 24px; margin-bottom: 24px;">
-    {% for project in projects %}
-    <div class="project-card">
-      <h2>{{ project.title }}</h2>
+  <div class="page-content fade-in">
+    <div class="projects-grid" style="margin-top: 24px; margin-bottom: 24px;">
+      {% for project in projects %}
+      <div class="project-card">
+        <h2>{{ project.title }}</h2>
 
-      <p>
-        {% if project.situacao %}
-        <strong>Situação:</strong> {{ project.situacao }}
-        {% else %}
-        Projeto cadastrado na Fábrica de Software.
+        <p>
+          {% if project.situacao %}
+          <strong>Situação:</strong> {{ project.situacao }}
+          {% else %}
+          Projeto cadastrado na Fábrica de Software.
+          {% endif %}
+        </p>
+
+        {% if project.technologiesList and project.technologiesList.length %}
+        <div class="project-tech">
+          {% for tech in project.technologiesList %}
+          <span>{{ tech }}</span>
+          {% endfor %}
+        </div>
         {% endif %}
-      </p>
 
-      {% if project.technologiesList and project.technologiesList.length %}
-      <div class="project-tech">
-        {% for tech in project.technologiesList %}
-        <span>{{ tech }}</span>
-        {% endfor %}
+        <a href="/projetos/{{ project.slug }}" class="btn-details">Ver detalhes</a>
       </div>
-      {% endif %}
-
-      <a href="/projetos/{{ project.slug }}" class="btn-details">Ver detalhes</a>
+      {% endfor %}
     </div>
-    {% endfor %}
   </div>
   {% else %}
   <div class="page-content" style="margin-top: 24px;">
