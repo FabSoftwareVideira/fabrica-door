@@ -1,0 +1,22 @@
+{% extends "base.html" %} {% block title %} {% if page %}{{ page.title }} - {%
+endif %}{{ SITENAME }} {% endblock %} {% block content %} {% if page %} {% if
+page.show_header != false %}
+<div class="page-header">
+  <div class="container">
+    <h1>{{ page.title }}</h1>
+  </div>
+</div>
+{% endif %}
+
+<div class="container">
+  <div class="page-content">{{ page.content | safe }}</div>
+</div>
+
+{% else %}
+<div class="container">
+  <div class="page-content">
+    <h1>Conteúdo não encontrado</h1>
+    <p>O conteúdo solicitado não está disponível.</p>
+  </div>
+</div>
+{% endif %} {% endblock %}

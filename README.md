@@ -1,96 +1,131 @@
-# SFS - Sistema da Fábrica de Software do IFC Videira
+# SFS - Site da Fábrica de Software do IFC Videira
 
-## O que é o SFS?
+Projeto web migrado para Node.js com Express e Nunjucks, reaproveitando o tema fabrica, os assets e as páginas existentes.
 
-O SFS é um sistema estático feito para divulgar os projetos desenvolvidos pela Fábrica de Software do IFC Videira, bem como as informações sobre a equipe e formas de contato.
+## Stack atual
 
-## Onde encontrar online?
+- Node.js
+- Express
+- Nunjucks
+- HTML, CSS e JavaScript
+- Docker e Docker Compose
+- PostgreSQL (projetos gerenciados via banco)
+- JWT + bcryptjs (autenticação de administradores)
 
-Acesse o SFS em [https://fabrica.videira.ifc.edu.br](https://fabrica.videira.ifc.edu.br)
+## Estrutura de conteúdo
 
-## Quem desenvolveu?
+- Conteúdo das páginas estáticas: `public/pages/*.html`
+- Conteúdo legado de projetos (HTML): `public/projects/*.html`
+- Dados e metadados das páginas: `src/data/pages.js`
+- Projetos cadastrados via banco de dados PostgreSQL
+- Templates do tema: `src/views`
+- Templates admin: `src/views/admin`
+- Templates auth: `src/views/auth`
+- Assets estáticos: `public/assets`
 
-O SFS foi desenvolvido pela equipe da Fábrica de Software do IFC Videira.
+## Estrutura `src/`
 
-## Tecnologias utilizadas
-
-![HTML5](https://img.shields.io/badge/-HTML5-E34F26?style=flat-square&logo=html5&logoColor=white)
-![CSS3](https://img.shields.io/badge/-CSS3-1572B6?style=flat-square&logo=css3&logoColor=white)
-![JavaScript](https://img.shields.io/badge/-JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=black)
-![Python](https://img.shields.io/badge/-Python-3776AB?style=flat-square&logo=python&logoColor=white)
-![Flask](https://img.shields.io/badge/-Flask-000000?style=flat-square&logo=flask&logoColor=white)
-![Pelican](https://img.shields.io/badge/-Pelican-00A98F?style=flat-square&logo=pelican&logoColor=white)
-![Markdown](https://img.shields.io/badge/-Markdown-000000?style=flat-square&logo=markdown&logoColor=white)
-![Docker](https://img.shields.io/badge/-Docker-2496ED?style=flat-square&logo=docker&logoColor=white)
-![GitHub](https://img.shields.io/badge/-GitHub-181717?style=flat-square&logo=github&logoColor=white)
-
-## Status do projeto
-
-[![Build Status](https://img.shields.io/badge/build-passing-brightgreen)](https://github.com/fabricioifc/fabrica-door/actions)
-[![Licença](https://img.shields.io/badge/license-MIT-blue)](https://github.com/fabricioifc/fabrica-door/blob/main/LICENSE)
-![GitHub last commit](https://img.shields.io/github/last-commit/fabricioifc/fabrica-door)
-
-## Pré-requisitos
-
-Antes de rodar o SFS localmente, certifique-se de ter instalado:
-
-- [Python 3.x](https://www.python.org/) (para execução sem Docker)
-- [Docker](https://www.docker.com/) (opcional, para execução com contêineres)
-- [Git](https://git-scm.com/) (para clonar o repositório)
-
-## Como rodar o SFS localmente usando Docker?
-
-Para rodar o SFS localmente, basta seguir os passos abaixo:
-
-1. Clone o repositório para a sua máquina.
-2. Instale o [Docker](https://www.docker.com/).
-3. Altere o arquivo `.env.sample` para `.env` e altere as variáveis de ambiente conforme necessário.
-
-> **Nota:** No arquivo `.env`, a variável `API_KEY` é usada internamente para proteger a API que envia e-mails. Assim, você não conseguirá usar o formulário de envio de e-mails. Se quiser usar o formulário de envio de e-mails, altere a lógica da aplicação e use outra estraatégia para enviar e-mails.
-
-4. Executar o script `deploy.sh` para subir o ambiente com o seguinte comando:
-
-```bash
-$ ./deploy.sh dev # modo desenvolvimento
-$ ./deploy.sh prod # modo produção
+```
+src/
+  app.js              # bootstrap MVC
+  server.js           # ponto de entrada
+  config/
+    site.js           # configurações do site
+    db.js             # pool PostgreSQL
+  models/
+    projectModel.js   # SQL CRUD de projetos
+    adminUserModel.js # busca de usuário admin
+  services/
+    pageService.js    # serviço de páginas estáticas
+    projectService.js # serviço de projetos (DB)
+    authService.js    # JWT + bcrypt
+  controllers/
+    siteController.js        # páginas públicas
+    authController.js        # login/logout
+    adminProjectController.js # CRUD admin
+  routes/
+    siteRoutes.js
+    authRoutes.js
+    adminProjectRoutes.js
+  middlewares/
+    authMiddleware.js  # guarda JWT via cookie
+    asyncHandler.js    # envolve funções async
+  utils/
+    renderPage.js      # helper de renderização
+  db/
+    migrations/
+      001_initial.sql  # schema inicial
+    hashPassword.js    # utilitário para gerar hash
+  views/
+    base.html / index.html / page.html / project.html / team.html / contato.html
+    auth/
+      login.html
+    admin/
+      projects-list.html
+      project-form.html
 ```
 
-5. Acesse o endereço [http://localhost:8000/](http://localhost:8000/).
+## Configurar banco de dados
 
-## Como rodar o SFS localmente sem Docker no Linux?
+1. Copie `.env.sample` para `.env` e preencha as variáveis `PG*`, `JWT_SECRET` e `JWT_EXPIRES_IN`.
+2. Suba o banco com Docker:
+   ```bash
+   docker compose up db -d
+   ```
+   A migration `src/db/migrations/001_initial.sql` roda automaticamente no primeiro start.
 
-Para rodar o SFS localmente sem Docker, basta seguir os passos abaixo:
+3. Gere o hash da senha do administrador:
+   ```bash
+   npm run hash-password SuaSenhaAqui
+   ```
+4. Insira o hash gerado na tabela `admin_users`:
+   ```sql
+   UPDATE admin_users
+   SET password_hash = '<hash_gerado>'
+   WHERE email = 'admin@fabrica.edu.br';
+   ```
 
-1. Clone o repositório para a sua máquina.
-2. Instale o [Python](https://www.python.org/).
-3. Instale a biblioteca `virtualenv`. (de acordo com o seu sistema operacional)
-4. Altere o arquivo `.env.sample` para `.env` e altere as variáveis de ambiente conforme necessário.
-5. Crie um ambiente virtual chamado `.venv`:
+## Rotas de administração
 
-```bash
-$ python -m venv .venv
-```
+| Rota | Descrição |
+|---|---|
+| `GET /auth/login` | Tela de login |
+| `POST /auth/login` | Autenticar (gera cookie JWT) |
+| `POST /auth/logout` | Encerrar sessão |
+| `GET /admin/projetos` | Listar projetos *(protegida)* |
+| `GET /admin/projetos/novo` | Formulário de novo projeto *(protegida)* |
+| `POST /admin/projetos` | Criar projeto *(protegida)* |
+| `GET /admin/projetos/:id/editar` | Formulário de edição *(protegida)* |
+| `POST /admin/projetos/:id` | Salvar edição *(protegida)* |
+| `POST /admin/projetos/:id/excluir` | Excluir projeto *(protegida)* |
 
-6. Ative o ambiente virtual:
+## Execução local sem Docker
 
-```bash
-$ source .venv/bin/activate
-```
+1. Copie `.env.sample` para `.env`.
+2. Instale as dependências:
+   ```bash
+   npm install
+   ```
+3. Suba o banco PostgreSQL localmente ou via Docker:
+   ```bash
+   docker compose up db -d
+   ```
+4. Inicie em desenvolvimento:
+   ```bash
+   npm run dev
+   ```
+5. Acesse: `http://localhost:8000`
 
-7. Instale as dependências do projeto:
+## Execução com Docker
 
-```bash
-$ pip install -r requirements.txt
-```
+1. Copie `.env.sample` para `.env`.
+2. Suba o ambiente:
+   ```bash
+   ./deploy.sh dev
+   ```
+3. Acesse: `http://localhost:8000`
 
-8. Execute o script para rodar o servidor com a biblioteca `pelican`:
+## Deploy
 
-```bash
-$ pelican -r -l
-```
+O deploy em produção continua via GitHub Actions, usando `docker-compose.yml` e variáveis do segredo `PROD_ENV_FILE`. Certifique-se de definir `JWT_SECRET` com um valor seguro em produção.
 
-9. Acesse o endereço [http://localhost:8000/](http://localhost:8000/).
-
-## Considerações finais
-
-O SFS é um projeto de código aberto e está disponível para uso e contribuição de todos. Sinta-se à vontade para contribuir com o projeto e ajudar a melhorar o sistema.

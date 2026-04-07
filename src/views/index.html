@@ -1,0 +1,138 @@
+{% extends "base.html" %} {% block extra_head %}
+<meta name="description"
+  content="Fábrica de Software - Desenvolvendo soluções tecnológicas para transformar a educação" />
+<link rel="stylesheet" href="{{ SITEURL }}/assets/css/index.css">
+{% endblock %}
+
+{% block content %}
+<canvas id="particle-canvas"></canvas>
+<section class="hero">
+  <!-- <video class="hero-video" autoplay loop muted playsinline
+    poster="{{ SITEURL }}/assets/videos/video-hero-background_poster.webp" preload="none">
+    <source src="{{ SITEURL }}/assets/videos/video-hero-background.mp4" type="video/mp4">
+    Seu navegador não suporta vídeo HTML5.
+  </video> -->
+  <div class="hero-overlay">
+    <div class="hero-content">
+      <h1>Transformamos ideias em soluções.</h1>
+      <p>
+        A Fábrica de Software é uma iniciativa dos professores de Informática
+        do <strong>Instituto Federal Catarinense – Campus Videira</strong>.
+      </p>
+      <!-- <img src="{{ SITEURL }}/images/ifc-videira.png" alt="Instituto Federal Catarinense - Campus Videira"
+        class="ifc-logo" loading="lazy" /> -->
+      <!-- <p>Conhecimento em prática, tecnologia para todos!</p> -->
+      <div class="hero-buttons">
+        <a href="{{ SITEURL }}/sobre" class="btn-primary">Conheça-nos</a>
+        <a href="{{ SITEURL }}/contato" class="btn-secondary">Fale Conosco</a>
+      </div>
+    </div>
+    <button class="scroll-hint" aria-label="Role para baixo ou use as setas do teclado">
+      <span class="scroll-arrow">↓</span>
+    </button>
+  </div>
+</section>
+
+
+<section class="features">
+  <div class="container">
+    <h2>Por que escolher nossa Fábrica de Software?</h2>
+    <div class="features-grid">
+      <div class="feature-item">
+        <div class="feature-icon">🎓</div>
+        <h3>Experiência Prática para Alunos</h3>
+        <p>
+          Oferecemos aos estudantes a chance de desenvolver software em projetos
+          reais, simulando o ambiente de uma empresa com foco na aprendizagem.
+        </p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">🤝</div>
+        <h3>Conexão com a Comunidade</h3>
+        <p>
+          Integramos a comunidade interna e externa do campus em iniciativas de
+          ensino, pesquisa e extensão, criando soluções colaborativas.
+        </p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">🔍</div>
+        <h3>Projetos de Ensino, Pesquisa e Extensão</h3>
+        <p>
+          Desenvolvemos software em um ritmo que prioriza a aprendizagem, unindo
+          teoria, prática e inovação em projetos acadêmicos.
+        </p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">⏳</div>
+        <h3>Desenvolvimento com Propósito</h3>
+        <p>
+          Trabalhamos em ciclos adaptados ao tempo de aprendizagem, garantindo
+          imersão sem a pressão de prazos comerciais.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="featured-projects">
+  <div class="container">
+    <h2>Projetos em Destaque</h2>
+    <div class="project-showcase">
+      <div class="project-card">
+        <div class="project-image">
+          <img src="{{ SITEURL }}/images/projects/cogercon/logo.webp" loading="lazy"
+            alt="Cogercon - Cooperativa de Energias Renováveis da Região do Contestado" />
+        </div>
+        <div class="project-info">
+          <h3>COGERCON</h3>
+          <p>Cooperativa de Energias Renováveis da Região do Contestado</p>
+          <a href="{{ SITEURL }}/projetos/cogercon" class="btn-primary">Saiba mais</a>
+        </div>
+      </div>
+      <div class="project-card">
+        <div class="project-image">
+          <img src="{{ SITEURL }}/images/projects/estagio/logo.png" loading="lazy"
+            alt="E-Stagio - Ferramenta para Gerenciamento de Estágios" />
+        </div>
+        <div class="project-info">
+          <h3>E-Stagio</h3>
+          <p>E-Stagio - Ferramenta para Gerenciamento de Estágios</p>
+          <a href="{{ SITEURL }}/projetos/estagio" class="btn-primary">Saiba mais</a>
+        </div>
+      </div>
+      <div class="project-card">
+        <div class="project-image">
+          <img src="{{ SITEURL }}/images/projects/fabrica/logo.svg" loading="lazy" alt="Fábrica de Software" />
+        </div>
+        <div class="project-info">
+          <h3>Fábrica de Software</h3>
+          <p>Fábrica de Software do <i>Campus</i> Videira</p>
+          <a href="{{ SITEURL }}/projetos/fabrica" class="btn-primary">Saiba mais</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Seção com vídeo de fundo -->
+<section class="video-section">
+  <video class="video-background" autoplay loop muted playsinline
+    poster="{{ SITEURL }}/assets/videos/background_poster.webp" preload="none">
+    <source src="{{ SITEURL }}/assets/videos/background.mp4" type="video/mp4">
+  </video>
+
+  <div class="video-overlay">
+    <h2>Vamos transformar a educação juntos?</h2>
+    <p>
+      Tem uma ideia? Quer desenvolver um projeto de software? Fale conosco e
+      descubra como podemos ajudar você a transformar a sua ideia em realidade.
+    </p>
+    <a href="{{ SITEURL }}/contato" class="btn-primary">Quero Fazer Parte</a>
+  </div>
+</section>
+
+{% block extra_js %}
+<script src="{{ SITEURL }}/assets/js/index.js"></script>
+{% endblock %}
+
+{% if page %} {{ page.content | safe }} {% endif %} {% endblock %}

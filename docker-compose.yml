@@ -1,30 +1,51 @@
 services:
-  pelican:
+  app:
     build:
       context: .
-      args:
-        SITE_NAME: "${SITE_NAME}"
-        SITE_URL: "${SITE_URL}"
-        GOOGLE_ANALYTICS: "${GOOGLE_ANALYTICS}"
-        CONTENT_PATH: "${CONTENT_PATH}"
-        OUTPUT_PATH: "${OUTPUT_PATH}"
-        CONFIG_FILE: "${CONFIG_FILE}"
-        API_KEY: "${API_KEY}"
-    container_name: fabrica-prod-door
+      target: development
+    container_name: fabrica-dev-door
+    user: "${UID:-1000}:${GID:-1000}"
     ports:
-      - "${PORT}:${PORT}"
+      - "${PORT:-8000}:${PORT:-8000}"
     env_file:
       - .env
+    environment:
+      NODE_ENV: development
+    volumes:
+      - .:/app
+      - /app/node_modules
+    networks:
+      - fabrica-network
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: on-failure
+
+  db:
+    image: postgres:18-alpine
+    container_name: fabrica-dev-db
+    environment:
+      PGDATA: /var/lib/postgresql/data
+      POSTGRES_DB: ${PGDATABASE:-fabrica_door}
+      POSTGRES_USER: ${PGUSER:-postgres}
+      POSTGRES_PASSWORD: ${PGPASSWORD:-postgres}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./src/db/migrations:/docker-entrypoint-initdb.d
     networks:
       - fabrica-network
     healthcheck:
-      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:${PORT}/index.html"]
-      start_period: 20s
-      interval: 30s
+      test: ["CMD-SHELL", "pg_isready -U ${PGUSER:-postgres} -d ${PGDATABASE:-fabrica_door}"]
+      interval: 10s
       timeout: 5s
-      retries: 3
+      retries: 5
     restart: unless-stopped
+
+volumes:
+  postgres_data:
 
 networks:
   fabrica-network:
-    external: true
+    driver: bridge

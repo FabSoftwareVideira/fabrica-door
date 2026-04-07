@@ -1,60 +1,26 @@
-FROM python:3.13-slim AS builder
-
+# Stage 1: Base
+FROM node:25-alpine AS base
 WORKDIR /app
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
-# Copiar apenas requirements para aproveitar cache
-COPY requirements.txt .
-# upgrade pip
-RUN pip install --no-cache-dir --upgrade pip
-# Instalar dependências
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copiar todo o projeto para o builder
+# Stage 2: Development
+FROM base AS development
+COPY package.json ./
+RUN npm install
 COPY . .
+RUN sed -i 's/\r$//' entrypoint.sh && chmod +x entrypoint.sh
+USER appuser
+EXPOSE 8000
+ENTRYPOINT ["sh", "./entrypoint.sh"]
 
-# Gerar o site estático
-ARG SITE_NAME
-ARG SITE_URL
-ARG GOOGLE_ANALYTICS
-ARG CONTENT_PATH=content
-ARG OUTPUT_PATH=output
-ARG CONFIG_FILE=pelicanconf.py
-ARG API_KEY
-ENV SITE_NAME=${SITE_NAME}
-ENV SITE_URL=${SITE_URL}
-ENV GOOGLE_ANALYTICS=${GOOGLE_ANALYTICS}
-ENV CONTENT_PATH=${CONTENT_PATH}
-ENV OUTPUT_PATH=${OUTPUT_PATH}
-ENV API_KEY=${API_KEY}
-RUN pelican ${CONTENT_PATH} -o ${OUTPUT_PATH} -s ${CONFIG_FILE}
+# Stage 3: Production
+FROM base AS production
+COPY package.json ./
+RUN npm install --omit=dev
+COPY . .
+RUN sed -i 's/\r$//' entrypoint.sh && chmod +x entrypoint.sh
+USER appuser
+EXPOSE 8000
+ENTRYPOINT ["sh", "./entrypoint.sh"]
 
-# Imagem final
-FROM python:3.13-slim
-
-WORKDIR /app
-
-# ✅ Instalar curl para o healthcheck
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends curl && \
-    rm -rf /var/lib/apt/lists/*
-
-# Garantir que o PATH inclua os binários do Python instalados
-ENV PATH="/usr/local/bin:/usr/bin:/bin:/usr/local/lib/python3.13/site-packages/.bin:$PATH"
-ENV PYTHONPATH="/usr/local/lib/python3.13/site-packages:$PYTHONPATH"
-
-# Copiar o output gerado, dependências e binários do Pelican
-COPY --from=builder /app/output ./output
-
-# Copiar arquivos de configuração e scripts necessários
-COPY entrypoint.sh ./
-RUN chmod +x entrypoint.sh
-
-# Criar usuário não-root e ajustar permissões de escrita
-RUN useradd -m -r pelicanuser && \
-    chown -R pelicanuser:pelicanuser /app && \
-    chmod -R 755 /app/output
-
-USER pelicanuser
-
-# Definir o entrypoint
-ENTRYPOINT ["./entrypoint.sh"]
+FROM production
