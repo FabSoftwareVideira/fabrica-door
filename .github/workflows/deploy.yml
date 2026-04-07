@@ -5,7 +5,7 @@ on:
     # branches:
     #   - main
     tags:
-      - 'v*' # Dispara para qualquer tag que comece com 'v' (ex: v1.0, v2.4.5)
+      - 'v*' 
   workflow_dispatch:
 
 jobs:
@@ -14,115 +14,81 @@ jobs:
     runs-on: self-hosted
     env:
       CONTAINER_NAME: fabrica-prod-door
+      COMPOSE_FILE: docker-compose.prod.yml # Centralizado para facilitar futuras trocas
 
     steps:
       # ── 1. PREPARAÇÃO ───────────────────────────────────────────────────────
       - name: 📂 Checkout do Código
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Garante que as tags sejam baixadas caso precise usá-las no build
+          fetch-depth: 0
 
       - name: 🔍 Validar Secrets Obrigatórias
         env:
           PROD_ENV_FILE: ${{ secrets.PROD_ENV_FILE }}
         run: |
-          echo "Verificando secrets obrigatórias..."
-          MISSING=()
-
-          [ -z "$PROD_ENV_FILE" ] && MISSING+=("PROD_ENV_FILE")
-
-          if [ ${#MISSING[@]} -ne 0 ]; then
-            echo "❌ ERRO: As seguintes secrets estão ausentes ou vazias:"
-            for secret in "${MISSING[@]}"; do
-              echo "   - $secret"
-            done
-            echo ""
-            echo "Configure as secrets em: Settings → Secrets and variables → Actions"
-            exit 1
-          fi
-
-          echo "✅ Todas as secrets obrigatórias estão presentes."
+          echo "Verificando secrets..."
+          [ -z "$PROD_ENV_FILE" ] && { echo "❌ Secret PROD_ENV_FILE ausente"; exit 1; }
+          echo "✅ Secrets presentes."
 
       - name: 🔐 Montar arquivo .env
         env:
           PROD_ENV_FILE: ${{ secrets.PROD_ENV_FILE }}
         run: |
           echo "$PROD_ENV_FILE" > .env
-
-          if [ ! -s .env ]; then
-            echo "❌ ERRO: O arquivo .env foi gerado vazio."
-            exit 1
-          fi
-
-          echo "✅ .env gerado com $(wc -l < .env) linha(s)."
+          echo "✅ .env gerado."
 
       - name: 🛠️ Validar Ambiente e Arquivos
         run: |
           echo "Verificando arquivos críticos..."
-
           MISSING_FILES=()
-          [ ! -f docker-compose.yml ] && MISSING_FILES+=("docker-compose.yml")
-          [ ! -f .env ]               && MISSING_FILES+=(".env")
+          [ ! -f "$COMPOSE_FILE" ] && MISSING_FILES+=("$COMPOSE_FILE")
+          [ ! -f .env ]             && MISSING_FILES+=(".env")
 
           if [ ${#MISSING_FILES[@]} -ne 0 ]; then
-            echo "❌ ERRO: Arquivos ausentes:"
-            for f in "${MISSING_FILES[@]}"; do
-              echo "   - $f"
-            done
+            echo "❌ ERRO: Arquivos ausentes: ${MISSING_FILES[*]}"
             exit 1
           fi
 
-          echo "Validando sintaxe do Docker Compose..."
-          if ! docker compose -f docker-compose.yml --env-file .env config -q; then
-            echo "❌ ERRO: docker-compose.yml possui erros de sintaxe."
+          echo "Validando sintaxe do $COMPOSE_FILE..."
+          if ! docker compose -f "$COMPOSE_FILE" --env-file .env config -q; then
+            echo "❌ ERRO: $COMPOSE_FILE possui erros de sintaxe."
             exit 1
           fi
-
-          if ! docker info > /dev/null 2>&1; then
-            echo "❌ ERRO: Docker daemon não está acessível."
-            exit 1
-          fi
-
-          echo "✅ Ambiente validado."
 
       # ── 2. EXECUÇÃO ─────────────────────────────────────────────────────────
       - name: 🐳 Atualizar e Subir Containers
         run: |
-          echo "Evento gatilho: ${{ github.event_name }}"
+          echo "Gatilho: ${{ github.ref_name }}"
           
-          # Se for tag, você pode usar ${{ github.ref_name }} para logar a versão
-          echo "Subindo versão: ${{ github.ref_name }}"
-
           echo "Puxando imagens novas..."
-          docker compose -f docker-compose.yml --env-file .env pull --quiet
+          docker compose -f "$COMPOSE_FILE" --env-file .env pull --quiet
 
-          echo "Iniciando serviços de produção..."
-          # O --build garante que a imagem local seja reconstruída com o código da nova tag/push
-          docker compose -f docker-compose.yml --env-file .env up -d --build --remove-orphans
+          echo "Iniciando serviços com $COMPOSE_FILE..."
+          docker compose -f "$COMPOSE_FILE" --env-file .env up -d --build --remove-orphans
 
       # ── 3. VERIFICAÇÃO PÓS-DEPLOY ────────────────────────────────────────────
       - name: ⏳ Aguardar Estabilização
         run: |
           sleep 10
-          UNHEALTHY=$(docker compose -f docker-compose.yml ps --format json \
+          UNHEALTHY=$(docker compose -f "$COMPOSE_FILE" ps --format json \
             | grep -E '"State":"(exited|dead|restarting|unhealthy)"' || true)
 
           if [ -n "$UNHEALTHY" ]; then
-            echo "❌ ERRO: Containers não saudáveis."
-            docker compose -f docker-compose.yml ps
-            docker compose -f docker-compose.yml logs --tail=50
+            echo "❌ ERRO: Containers em estado inválido."
+            docker compose -f "$COMPOSE_FILE" ps
             exit 1
           fi
 
           if ! docker ps --format '{{.Names}}' | grep -Fxq "$CONTAINER_NAME"; then
-            echo "❌ ERRO: Container '$CONTAINER_NAME' não encontrado."
+            echo "❌ ERRO: Container '$CONTAINER_NAME' não subiu."
             exit 1
           fi
 
       # ── 4. MANUTENÇÃO ────────────────────────────────────────────────────────
-      - name: 🧹 Limpeza
+      - name: 🧹 Limpeza Final
         if: always()
         run: |
           docker image prune -f
           rm -f .env
-          echo "✅ Limpeza concluída."
+          echo "✅ Deploy finalizado e ambiente limpo."
