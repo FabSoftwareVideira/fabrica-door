@@ -97,14 +97,6 @@ endif %}{{ SITENAME }} {% endblock %} {% block content %} {% if page %}
         </ul>
       </div>
       {% endif %}
-      {% if page.featured_image %}
-      <div class="project-card">
-        <h3>Imagem do Projeto</h3>
-        <div class="project-featured-image">
-          <img src="{{ SITEURL }}/{{ page.featured_image }}" alt="{{ page.title }}" />
-        </div>
-      </div>
-      {% endif %}
     </aside>
   </div>
 </div>
