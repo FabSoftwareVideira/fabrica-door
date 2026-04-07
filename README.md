@@ -129,3 +129,6 @@ src/
 
 O deploy em produção continua via GitHub Actions, usando `docker-compose.yml` e variáveis do segredo `PROD_ENV_FILE`. Certifique-se de definir `JWT_SECRET` com um valor seguro em produção.
 
+## CI/CD
+
+- O workflow `deploy.yml` é acionado por pushes com as tags `v*`.
