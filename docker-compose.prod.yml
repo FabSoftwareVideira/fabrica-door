@@ -29,7 +29,7 @@ services:
       POSTGRES_USER: ${PGUSER:-postgres}
       POSTGRES_PASSWORD: ${PGPASSWORD:-postgres}
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - fabrica_prod_data:/var/lib/postgresql/data
       - ./src/db/migrations:/docker-entrypoint-initdb.d
     networks:
       - fabrica-network
@@ -41,7 +41,7 @@ services:
     restart: unless-stopped
 
 volumes:
-  postgres_data:
+  fabrica_prod_data:
 
 networks:
   fabrica-network:
