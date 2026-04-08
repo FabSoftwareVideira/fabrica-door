@@ -16,6 +16,7 @@ module.exports = function renderPage(res, site, options) {
         SOCIAL_LINKS: site.SOCIAL_LINKS,
         current_year: new Date().getFullYear(),
         currentPath,
+        isAuthenticated: Boolean(res.locals?.isAuthenticated),
         page,
         ...extra
     });

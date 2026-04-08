@@ -53,6 +53,14 @@
             </a>
           </li>
           {% endfor %}
+
+          {% if isAuthenticated %}
+          <li class="nav-logout-item">
+            <form method="post" action="/auth/logout">
+              <button type="submit" class="nav-logout-btn">Sair</button>
+            </form>
+          </li>
+          {% endif %}
         </ul>
       </nav>
     </div>

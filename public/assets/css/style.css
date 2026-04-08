@@ -239,6 +239,28 @@ nav a:active::after {
   transition: none; /* Desativa a animação do sublinhado no clique */
 }
 
+.nav-logout-item form {
+  margin: 0;
+}
+
+.nav-logout-btn {
+  background: transparent;
+  border: 2px solid var(--primary-color);
+  color: var(--primary-color);
+  padding: 6px 12px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--link-transition);
+}
+
+.nav-logout-btn:hover,
+.nav-logout-btn:focus-visible {
+  background: var(--primary-color);
+  color: #fff;
+  outline: none;
+}
+
 header.scrolled {
   background-color: rgba(255, 255, 255, 0.95);
   box-shadow: 0 4px 15px var(--header-shadow);
@@ -1165,6 +1187,15 @@ footer {
   nav li {
     margin: 10px 0;
     width: 100%;
+  }
+
+  .nav-logout-item {
+    margin-top: 4px;
+  }
+
+  .nav-logout-btn {
+    width: 100%;
+    text-align: left;
   }
 
   nav a {

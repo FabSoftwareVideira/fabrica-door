@@ -69,6 +69,25 @@ function createApp() {
     // auth middleware
     const requireAuth = createAuthMiddleware(authService);
 
+    // auth state para templates (ex.: botão de logout na navbar)
+    app.use((req, res, next) => {
+        const token = req.cookies?.auth_token;
+
+        if (!token) {
+            res.locals.isAuthenticated = false;
+            return next();
+        }
+
+        try {
+            res.locals.user = authService.verifyToken(token);
+            res.locals.isAuthenticated = true;
+        } catch (_error) {
+            res.locals.isAuthenticated = false;
+        }
+
+        return next();
+    });
+
     // routes
     app.use(createSiteRoutes(siteController));
     app.use(createAuthRoutes(authController));
