@@ -3,48 +3,50 @@
 {% block title %}Gerenciar Projetos - {{ SITENAME }}{% endblock %}
 
 {% block content %}
-<div class="container" style="padding: 40px 0;">
-    <div style="display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap: wrap;">
-        <h1>Gerenciar projetos</h1>
-        <div style="display:flex; gap: 8px; align-items:center;">
-            <a href="/admin/projetos/novo" class="btn-primary">Novo projeto</a>
-            <form method="post" action="/auth/logout">
-                <button type="submit" class="btn-secondary">Sair</button>
-            </form>
+<section class="admin-projects-list-section">
+    <div class="container">
+        <div class="admin-projects-list-header">
+            <h1>Gerenciar projetos</h1>
+            <div class="admin-projects-list-header-actions">
+                <a href="/admin/projetos/novo" class="btn-primary">Novo projeto</a>
+                <form method="post" action="/auth/logout">
+                    <button type="submit" class="btn-secondary">Sair</button>
+                </form>
+            </div>
         </div>
-    </div>
 
-    {% if projects.length %}
-    <div style="overflow-x:auto; margin-top: 20px;">
-        <table style="width:100%; border-collapse: collapse;">
-            <thead>
-                <tr>
-                    <th style="text-align:left; padding:10px; border-bottom:1px solid #ddd;">Título</th>
-                    <th style="text-align:left; padding:10px; border-bottom:1px solid #ddd;">Slug</th>
-                    <th style="text-align:left; padding:10px; border-bottom:1px solid #ddd;">Situação</th>
-                    <th style="text-align:left; padding:10px; border-bottom:1px solid #ddd;">Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for project in projects %}
-                <tr>
-                    <td style="padding:10px; border-bottom:1px solid #eee;">{{ project.title }}</td>
-                    <td style="padding:10px; border-bottom:1px solid #eee;">{{ project.slug }}</td>
-                    <td style="padding:10px; border-bottom:1px solid #eee;">{{ project.situacao }}</td>
-                    <td style="padding:10px; border-bottom:1px solid #eee; display:flex; gap:8px; flex-wrap: wrap;">
-                        <a class="btn-secondary" href="/admin/projetos/{{ project.id }}/editar">Editar</a>
-                        <form method="post" action="/admin/projetos/{{ project.id }}/excluir"
-                            onsubmit="return confirm('Excluir este projeto?')">
-                            <button type="submit" class="btn-secondary">Excluir</button>
-                        </form>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        {% if projects.length %}
+        <div class="admin-projects-list-table-wrap">
+            <table class="admin-projects-list-table">
+                <thead>
+                    <tr>
+                        <th>Título</th>
+                        <th>Slug</th>
+                        <th>Situação</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for project in projects %}
+                    <tr>
+                        <td>{{ project.title }}</td>
+                        <td>{{ project.slug }}</td>
+                        <td>{{ project.situacao }}</td>
+                        <td class="admin-projects-list-actions">
+                            <a class="btn-secondary" href="/admin/projetos/{{ project.id }}/editar">Editar</a>
+                            <form method="post" action="/admin/projetos/{{ project.id }}/excluir"
+                                onsubmit="return confirm('Excluir este projeto?')">
+                                <button type="submit" class="btn-secondary">Excluir</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="admin-projects-list-empty">Nenhum projeto cadastrado ainda.</p>
+        {% endif %}
     </div>
-    {% else %}
-    <p style="margin-top: 20px;">Nenhum projeto cadastrado ainda.</p>
-    {% endif %}
-</div>
+</section>
 {% endblock %}
