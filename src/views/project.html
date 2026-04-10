@@ -7,7 +7,7 @@ endif %}{{ SITENAME }} {% endblock %} {% block content %} {% if page %}
 
       <div class="project-meta">
         <span
-          class="project-status {% if page.situacao == 'Em Andamento' %}status-ongoing{% endif %} {% if page.situacao == 'Concluído' %}status-completed{% endif %} {% if page.situacao == 'Em Planejamento' %}status-planned{% endif %}">
+          class="project-status status-badge {% if page.statusClass == 'andamento' %}status-andamento{% endif %} {% if page.statusClass == 'concluido' %}status-concluido{% endif %} {% if page.statusClass == 'planejamento' %}status-planejamento{% endif %}">
           {{ page.situacao }}
         </span>
 

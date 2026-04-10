@@ -26,14 +26,20 @@
                 <tbody>
                     {% for project in projects %}
                     <tr>
-                        <td>{{ project.title }}</td>
+                        <td>
+                            <a target="_blank" href="/projetos/{{ project.slug }}">{{ project.title }}</a>
+                        </td>
                         <td>{{ project.slug }}</td>
-                        <td>{{ project.situacao }}</td>
+                        <td>
+                            <span class="status-badge status-{{ project.statusClass }}">{{ project.situacao }}</span>
+                        </td>
                         <td class="admin-projects-list-actions">
-                            <a class="btn-secondary" href="/admin/projetos/{{ project.id }}/editar">Editar</a>
+                            <a class="action-icon" href="/admin/projetos/{{ project.id }}/editar" title="Editar"><i
+                                    class="fa-solid fa-pen"></i></a>
                             <form method="post" action="/admin/projetos/{{ project.id }}/excluir"
                                 onsubmit="return confirm('Excluir este projeto?')">
-                                <button type="submit" class="btn-secondary">Excluir</button>
+                                <button type="submit" class="action-icon" title="Excluir"><i
+                                        class="fa-solid fa-trash"></i></button>
                             </form>
                         </td>
                     </tr>

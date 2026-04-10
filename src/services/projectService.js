@@ -4,11 +4,18 @@ module.exports = function createProjectService(projectModel) {
             return null;
         }
 
+        const statusClassMap = {
+            "Em Andamento": "andamento",
+            "Concluído": "concluido",
+            "Em Planejamento": "planejamento"
+        };
+
         return {
             id: row.id,
             slug: row.slug,
             title: row.title,
             situacao: row.situacao,
+            statusClass: statusClassMap[row.situacao] || "desconhecido",
             start_date: row.start_date || "",
             end_date: row.end_date || "",
             featured_image: row.featured_image || "",
