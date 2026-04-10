@@ -1,4 +1,20 @@
 document.addEventListener("DOMContentLoaded", () => {
+  // Dropdown de admin
+  const dropdownToggle = document.querySelector(".nav-dropdown-toggle");
+  const navDropdown = document.querySelector(".nav-dropdown");
+  if (dropdownToggle && navDropdown) {
+    dropdownToggle.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const isOpen = navDropdown.classList.toggle("open");
+      dropdownToggle.setAttribute("aria-expanded", isOpen);
+    });
+    document.addEventListener("click", () => {
+      navDropdown.classList.remove("open");
+      dropdownToggle.setAttribute("aria-expanded", "false");
+    });
+    navDropdown.addEventListener("click", (e) => e.stopPropagation());
+  }
+
   const hamburger = document.querySelector(".hamburger");
   const nav = document.querySelector("nav");
   const header = document.querySelector("header#header");
@@ -222,10 +238,9 @@ function showFeedback(type, message) {
     margin-top: 10px;
     border-radius: 4px;
     font-family: Arial, sans-serif;
-    ${
-      type === "success"
-        ? "background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb;"
-        : "background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb;"
+    ${type === "success"
+      ? "background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb;"
+      : "background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb;"
     }
   `;
   contactForm.appendChild(formMessage);

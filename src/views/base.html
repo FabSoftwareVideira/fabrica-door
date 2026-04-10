@@ -55,10 +55,25 @@
           {% endfor %}
 
           {% if isAuthenticated %}
-          <li class="nav-logout-item">
-            <form method="post" action="/auth/logout">
-              <button type="submit" class="nav-logout-btn">Sair</button>
-            </form>
+          <li class="nav-dropdown">
+            <button class="nav-dropdown-toggle" aria-haspopup="true" aria-expanded="false">
+              <i class="fa-solid fa-user-gear"></i> Admin
+              <i class="fa-solid fa-chevron-down nav-dropdown-arrow"></i>
+            </button>
+            <ul class="nav-dropdown-menu" role="menu">
+              <li role="none">
+                <a href="/admin/projetos" role="menuitem">
+                  <i class="fa-solid fa-list-check"></i> Projetos
+                </a>
+              </li>
+              <li role="none">
+                <form method="post" action="/auth/logout">
+                  <button type="submit" class="nav-dropdown-logout" role="menuitem">
+                    <i class="fa-solid fa-right-from-bracket"></i> Sair
+                  </button>
+                </form>
+              </li>
+            </ul>
           </li>
           {% endif %}
         </ul>

@@ -76,7 +76,7 @@
   font-weight: bold;
 }
 
-.status-ongoing {
+/* .status-ongoing {
   background-color: #ffeeba;
   color: #856404;
 }
@@ -89,7 +89,7 @@
 .status-planned {
   background-color: #d1ecf1;
   color: #0c5460;
-}
+} */
 
 .project-content-wrapper {
   display: grid;
