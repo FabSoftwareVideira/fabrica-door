@@ -1,18 +1,7 @@
 # Projeto Avaliativo: Machine Learning com Dados de Chamados
 
-O objetivo é aplicar técnicas de **Machine Learning** em um dataset real de chamados (helpdesk), permitindo que cada grupo **defina o problema**, desenvolva um modelo e **avalie seu desempenho com métricas adequadas**.
-
-Você recebeu um conjunto de dados contendo registros de chamados com atributos como:
-
-* Título
-* Categoria
-* Prioridade
-* Status
-* Datas
-
+Você recebeu um conjunto de dados contendo registros de chamados. O objetivo é aplicar técnicas de **Machine Learning** em um dataset real de chamados (helpdesk) para resolver um problema específico.
 A partir desse dataset, você deverá: **Definir um problema de Machine Learning e construir uma solução avaliada por métricas**
-
----
 
 ## Escolha do problema
 
@@ -26,8 +15,6 @@ Cada grupo deverá escolher **UMA** das possibilidades abaixo **ou propor outra 
 6. **Busca por Similaridade Semântica:** Dado um novo título de chamado, recuperar os chamados mais semelhantes do histórico. *(Nota: este problema não é um sistema de recomendação clássico — é uma tarefa de recuperação de informação baseada em similaridade de texto.)*
 7. **Previsão de Tempo (Regressão):** Prever o tempo até o atendimento ou o tempo de resolução, se houver dados suficientes. *Este é um problema de regressão — use métricas como MAE e RMSE.*
 8. **Problema personalizado:** O grupo pode propor um problema próprio, desde que: a) envolva Machine Learning; b) use o dataset fornecido; c) seja aprovado pelo professor.
-
----
 
 ## Requisitos
 
@@ -49,64 +36,31 @@ Use métricas condizentes com o tipo de problema. Veja a seção de métricas ab
 #### ✅ 6. Interpretar os resultados (análise crítica)
 Não basta apresentar os números — explique o que eles significam. O modelo aprendeu algo útil? Onde ele erra mais? Por quê?
 
----
-
-## Métricas
-
-Escolha as métricas adequadas ao tipo de problema do seu grupo:
-
-| Tipo de problema | Métricas sugeridas |
-|---|---|
-| Classificação | Accuracy, Precision, Recall, F1-score (macro e weighted), Matriz de confusão |
-| Regressão | MAE (Erro Absoluto Médio), RMSE (Raiz do Erro Quadrático Médio) |
-| Clustering | Silhouette Score, Elbow Method (para escolha do número de clusters), análise qualitativa dos grupos |
-| Similaridade / Busca | Similaridade de cosseno, avaliação manual dos resultados |
-
-> ⚠️ **Atenção sobre desbalanceamento de classes:** datasets de chamados costumam ter distribuição desigual entre categorias (ex: muitos chamados de "baixa prioridade" e poucos de "alta"). Nesses casos, a *accuracy* pode ser enganosa. Analise o relatório de classificação completo (`classification_report` do scikit-learn) e prefira o **F1-score macro** como métrica principal.
-
----
-
-## Referências de algoritmos
-
-Escolha algoritmos compatíveis com o tipo de problema. Abaixo estão sugestões organizadas por tipo:
-
-* **Classificação:** Naive Bayes (bom ponto de partida para texto), Regressão Logística, SVM, Random Forest, Gradient Boosting
-* **Regressão:** Regressão Linear, Ridge, Random Forest Regressor
-* **Clustering:** K-Means, DBSCAN
-* **Similaridade:** TF-IDF + Cosine Similarity, Sentence Transformers (embeddings)
-
-**Bibliotecas recomendadas:** `scikit-learn`, `pandas`, `matplotlib`, `seaborn`. Para embeddings avançados: `sentence-transformers`.
-
----
-
-## Desafio opcional (bônus ⭐)
-
-O grupo pode aumentar sua nota realizando a **comparação entre dois ou mais modelos ou abordagens**. O bônus deve incluir:
-
-* Comparação direta das métricas entre os modelos
-* Discussão sobre as diferenças observadas
-* Escolha justificada do melhor modelo
-
-**Exemplos de comparações válidas:**
-* Classificação: Naive Bayes vs. Regressão Logística vs. SVM
-* Clustering: K-Means vs. DBSCAN
-* Representação de texto: TF-IDF vs. embeddings pré-treinados
-
----
-
 ## Entregáveis
 
-### 1. Código do projeto
-Notebook ou script com todo o pipeline: leitura dos dados → pré-processamento → separação treino/teste → treinamento → avaliação.
+Cada entrega deve ser feita em um notebook Jupyter (ou Google Colab) contendo:
 
-### 2. Relatório (ou README) com as seguintes seções:
+### Entrega 1 (16/04/26):** Definição e exploração dos dados
 
-* Problema escolhido e justificativa
-* Pré-processamento realizado
-* Modelo(s) utilizado(s)
-* Métricas utilizadas (com explicação do que cada uma representa)
-* Resultados obtidos e análise crítica
+* Escolher o problema de ML (classificação, clustering, regressão etc.) e justificar a escolha
+* Carregar o dataset e explorar as colunas, tipos e distribuição dos dados
+* Identificar valores ausentes, classes desbalanceadas e possíveis problemas
+* Definir a entrada e a saída esperada do modelo
 
-### 3. Demonstração
+### Entrega 2 (23/04/26):** Pré-processamento e preparação dos dados
 
-* Apresentação oral (5–10 minutos) explicando o projeto, os resultados e as conclusões
+* Limpar os dados: remover ou preencher valores ausentes, tratar inconsistências, mormalizar, codificar variáveis categóricas (se necessário), etc
+* Para atributos textuais, aplicar técnicas de representação (TF-IDF, CountVectorizer ou embeddings)
+
+### Entrega 3 (28/04/26):** Treinamento e avaliação do modelo
+
+* Separar os dados em treino e teste (mínimo 70% / 30%). Pode usar validação cruzada para uma avaliação mais robusta.
+* Treinar pelo menos 1 modelo de Machine Learning adequado ao problema escolhido
+* Calcular as métricas apropriadas 
+* Gerar matriz de confusão, relatório de classificação ou visualização do clustering
+* (Bônus) Treinar um segundo modelo para comparação
+
+### Entrega 4 (30/04/26):** Análise crítica e apresentação
+
+* Redigir a análise: o modelo aprendeu algo útil? Onde erra mais? Por quê?
+* Apresentação oral (5 min por equipe) explicando o projeto, os resultados e as conclusões
