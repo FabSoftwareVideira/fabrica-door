@@ -9,11 +9,11 @@ Cada grupo deverá escolher **UMA** das possibilidades abaixo **ou propor outra 
 
 1. **Classificação de Categoria:** Prever a categoria do chamado com base no título.
 2. **Classificação de Prioridade:** Prever se um chamado é Baixa, Média ou Alta prioridade.
-3. **Classificação de Status:** Prever o status do chamado (Pendente, Em atendimento, etc.). ⚠️ *Atenção: evite usar atributos que "entregam" diretamente a resposta, como data de fechamento — isso tornaria o modelo trivial.*
+3. **Classificação de Status:** Prever o status do chamado (Pendente, Em atendimento, etc.).
 4. **Agrupamento de Chamados (Clustering):** Agrupar chamados semelhantes automaticamente, sem usar rótulos.
-5. **Detecção de Chamados Duplicados:** Identificar chamados que tratam do mesmo problema usando similaridade semântica entre títulos. *Não há rótulos de "duplicata" no dataset — a avaliação deve ser feita por análise qualitativa dos pares encontrados.*
-6. **Busca por Similaridade Semântica:** Dado um novo título de chamado, recuperar os chamados mais semelhantes do histórico. *(Nota: este problema não é um sistema de recomendação clássico — é uma tarefa de recuperação de informação baseada em similaridade de texto.)*
-7. **Previsão de Tempo (Regressão):** Prever o tempo até o atendimento ou o tempo de resolução, se houver dados suficientes. *Este é um problema de regressão — use métricas como MAE e RMSE.*
+5. **Detecção de Chamados Duplicados:** Identificar chamados que tratam do mesmo problema usando similaridade semântica entre títulos.
+6. **Busca por Similaridade Semântica:** Dado um novo título de chamado, recuperar os chamados mais semelhantes do histórico. 
+7. **Previsão de Tempo (Regressão):** Prever o tempo até o atendimento ou o tempo de resolução, se houver dados suficientes.
 8. **Problema personalizado:** O grupo pode propor um problema próprio, desde que: a) envolva Machine Learning; b) use o dataset fornecido; c) seja aprovado pelo professor.
 
 ## Requisitos
@@ -25,7 +25,7 @@ Descreva o que se deseja prever ou descobrir, qual é a entrada do modelo e qual
 Inclui limpeza, tratamento de valores ausentes e transformação dos atributos. Para atributos textuais (como o título), é necessário aplicar alguma técnica de representação, como **TF-IDF**, **CountVectorizer** ou **embeddings pré-treinados**. Remoção de stopwords e normalização do texto são boas práticas recomendadas.
 
 #### ✅ 3. Separar os dados em treino e teste
-Antes de qualquer treinamento, divida o dataset em conjunto de treino e conjunto de teste (mínimo 70% / 30%). **Nunca avalie o modelo nos mesmos dados em que ele foi treinado.**
+Antes de qualquer treinamento, divida o dataset em conjunto de treino e conjunto de teste (mínimo 70% / 30%).
 
 #### ✅ 4. Treinar pelo menos 1 modelo de Machine Learning
 Escolha um algoritmo adequado ao tipo de problema. Veja sugestões na seção de referências.
