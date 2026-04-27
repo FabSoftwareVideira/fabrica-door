@@ -4,6 +4,10 @@ services:
       context: .
       target: production
     container_name: fabrica-prod-door
+    labels:
+      app.name: Fábrica de Software - IFC Videira
+      app.environment: production
+      app.url: "https://fabrica.videira.ifc.edu.br"
     ports:
       - "${PORT:-8000}:${PORT:-8000}"
     env_file:
@@ -13,7 +17,14 @@ services:
     networks:
       - fabrica-network
     healthcheck:
-      test: [ "CMD", "wget", "--spider", "-q", "http://127.0.0.1:${PORT:-8000}/health" ]
+      test:
+        [
+          "CMD",
+          "wget",
+          "--spider",
+          "-q",
+          "http://127.0.0.1:${PORT:-8000}/health",
+        ]
       start_period: 20s
       interval: 30s
       timeout: 5s
@@ -34,7 +45,11 @@ services:
     networks:
       - fabrica-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${PGUSER:-postgres} -d ${PGDATABASE:-fabrica_door}"]
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${PGUSER:-postgres} -d ${PGDATABASE:-fabrica_door}",
+        ]
       interval: 10s
       timeout: 5s
       retries: 5
