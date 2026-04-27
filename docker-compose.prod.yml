@@ -4,16 +4,23 @@ services:
       context: .
       target: production
     container_name: fabrica-prod-door
+    image: fabrica-prod-door:${IMAGE_TAG:-latest}
     labels:
-      app.name: Fábrica de Software - IFC Videira
-      app.environment: production
+      app.name: "Fábrica de Software - IFC Videira"
+      app.environment: "production"
       app.url: "https://fabrica.videira.ifc.edu.br"
+      app.version: "${IMAGE_TAG:-dev}"
+      app.git-commit: "${GIT_COMMIT:-unknown}"
+      app.build-date: "${BUILD_DATE:-unknown}"
     ports:
       - "${PORT:-8000}:${PORT:-8000}"
     env_file:
       - .env
     environment:
       NODE_ENV: production
+      IMAGE_TAG: ${IMAGE_TAG}
+      GIT_COMMIT: ${GIT_COMMIT}
+      BUILD_DATE: ${BUILD_DATE}
     networks:
       - fabrica-network
     healthcheck:
