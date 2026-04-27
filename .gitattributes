@@ -1,0 +1,5 @@
+# Normaliza finais de linha para LF no repositório
+* text=auto eol=lf
+
+# Scripts shell sempre com LF
+*.sh text eol=lf

@@ -2,6 +2,10 @@ const path = require("path");
 
 const SITE_NAME = process.env.SITE_NAME || "Fábrica de Software - IFC Videira";
 const SITE_URL = process.env.SITE_URL || "";
+const APP_VERSION = process.env.IMAGE_TAG || "dev";
+const APP_COMMIT = process.env.GIT_COMMIT || "unknown";
+const APP_BUILD_DATE = process.env.BUILD_DATE || "";
+const APP_IMAGE = process.env.IMAGE_NAME || ""; // opcional
 
 module.exports = {
     rootDir: path.resolve(__dirname, "..", ".."),
@@ -11,6 +15,11 @@ module.exports = {
         process.env.EMAIL_FABRICA || "fabricadesoftware.videira@ifc.edu.br",
     GOOGLE_ANALYTICS: process.env.GOOGLE_ANALYTICS || "",
     API_KEY: process.env.API_KEY || "",
+    // 🔽 EXPORTAR
+    APP_VERSION,
+    APP_COMMIT,
+    APP_BUILD_DATE,
+    APP_IMAGE,
     MENUITEMS: [
         { title: "Início", link: "/", path: "/" },
         { title: "Sobre", link: "/sobre", path: "/sobre" },
