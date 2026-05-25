@@ -21,17 +21,12 @@ services:
       IMAGE_TAG: ${IMAGE_TAG}
       GIT_COMMIT: ${GIT_COMMIT}
       BUILD_DATE: ${BUILD_DATE}
+    volumes:
+      - fabrica-prod-uploads:/app/public/assets/uploads
     networks:
       - fabrica-network
     healthcheck:
-      test:
-        [
-          "CMD",
-          "wget",
-          "--spider",
-          "-q",
-          "http://127.0.0.1:${PORT:-8000}/health",
-        ]
+      test: [ "CMD", "wget", "--spider", "-q", "http://127.0.0.1:${PORT:-8000}/health" ]
       start_period: 20s
       interval: 30s
       timeout: 5s
@@ -52,11 +47,7 @@ services:
     networks:
       - fabrica-network
     healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "pg_isready -U ${PGUSER:-postgres} -d ${PGDATABASE:-fabrica_door}",
-        ]
+      test: [ "CMD-SHELL", "pg_isready -U ${PGUSER:-postgres} -d ${PGDATABASE:-fabrica_door}" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -64,6 +55,7 @@ services:
 
 volumes:
   fabrica_prod_data:
+  fabrica-prod-uploads:
 
 networks:
   fabrica-network:
