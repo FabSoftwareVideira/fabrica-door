@@ -177,3 +177,7 @@ __pycache__/
 output/
 node_modules/
 npm-debug.log*
+
+# Outros
+*.log
+uploads/
