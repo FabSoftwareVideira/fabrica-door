@@ -11,7 +11,19 @@ module.exports = function createAdminUserModel(db) {
         return result.rows[0] || null;
     }
 
+    async function create(email) {
+        const result = await db.query(
+            `INSERT INTO admin_users (email, password_hash)
+             VALUES ($1, $2)
+             RETURNING id, email`,
+            [email, ""]
+        );
+
+        return result.rows[0];
+    }
+
     return {
-        findByEmail
+        findByEmail,
+        create
     };
 };

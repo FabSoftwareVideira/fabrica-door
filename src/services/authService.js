@@ -83,8 +83,20 @@ module.exports = function createAuthService(adminUserModel) {
         loginAttempts.delete(key);
     }
 
+    function isAllowedAdminEmail(email) {
+        const normalized = (email || "").trim().toLowerCase();
+        return /@ifc\.edu\.br$/i.test(normalized);
+    }
+
     async function authenticate(email, password) {
-        const user = await adminUserModel.findByEmail(email);
+        const normalizedEmail = (email || "").trim().toLowerCase();
+
+        if (!isAllowedAdminEmail(normalizedEmail)) {
+            await bcrypt.compare(password, dummyHash);
+            return null;
+        }
+
+        const user = await adminUserModel.findByEmail(normalizedEmail);
 
         if (!user) {
             await bcrypt.compare(password, dummyHash);
@@ -101,6 +113,23 @@ module.exports = function createAuthService(adminUserModel) {
             id: user.id,
             email: user.email
         };
+    }
+
+    async function findOrCreateByEmail(email) {
+        const normalizedEmail = (email || "").trim().toLowerCase();
+
+        if (!isAllowedAdminEmail(normalizedEmail)) {
+            throw new Error("Acesso permitido apenas para e-mails do domínio @ifc.edu.br.");
+        }
+
+        const user = await adminUserModel.findByEmail(normalizedEmail);
+
+        if (user) {
+            return { id: user.id, email: user.email };
+        }
+
+        const created = await adminUserModel.create(normalizedEmail);
+        return { id: created.id, email: created.email };
     }
 
     function signToken(user) {
@@ -139,6 +168,7 @@ module.exports = function createAuthService(adminUserModel) {
 
     return {
         authenticate,
+        findOrCreateByEmail,
         signToken,
         verifyToken,
         getCookieOptions,

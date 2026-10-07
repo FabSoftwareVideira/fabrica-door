@@ -8,5 +8,9 @@ module.exports = function createAuthRoutes(authController) {
     router.post("/auth/login", asyncHandler(authController.login));
     router.post("/auth/logout", authController.logout);
 
+    // Google OAuth
+    router.get("/auth/google", authController.googleLogin);
+    router.get("/auth/google/callback", asyncHandler(authController.googleCallback));
+
     return router;
 };
