@@ -71,6 +71,16 @@ function createApp() {
 
     // auth state para templates (ex.: botão de logout na navbar)
     app.use((req, res, next) => {
+        // Em modo dev com DEV_AUTO_LOGIN=true, sempre aparece como autenticado
+        if (
+            process.env.NODE_ENV !== "production" &&
+            process.env.DEV_AUTO_LOGIN === "true"
+        ) {
+            res.locals.user = { id: 0, email: "dev@localhost" };
+            res.locals.isAuthenticated = true;
+            return next();
+        }
+
         const token = req.cookies?.auth_token;
 
         if (!token) {

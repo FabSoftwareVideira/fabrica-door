@@ -12,5 +12,8 @@ module.exports = function createAuthRoutes(authController) {
     router.get("/auth/google", authController.googleLogin);
     router.get("/auth/google/callback", asyncHandler(authController.googleCallback));
 
+    // Login automático para desenvolvimento (só ativo quando DEV_AUTO_LOGIN=true)
+    router.post("/auth/dev-login", asyncHandler(authController.devLogin));
+
     return router;
 };

@@ -15,6 +15,20 @@
             </div>
             {% endif %}
 
+            {% if isDevMode %}
+            <div class="auth-login-actions" style="margin-top:1.5rem; text-align:center;">
+                <form method="POST" action="/auth/dev-login">
+                    <button type="submit"
+                        class="btn-primary auth-login-submit"
+                        style="display:inline-flex; align-items:center; justify-content:center; gap:0.6rem; cursor:pointer; border:none;">
+                        🛠️ Entrar como dev (sem senha)
+                    </button>
+                </form>
+                <p style="margin-top:0.75rem; font-size:0.85rem; color:#888;">
+                    Modo desenvolvimento ativo — login automático como <code>dev@localhost</code>
+                </p>
+            </div>
+            {% else %}
             <div class="auth-login-actions" style="margin-top:1.5rem; text-align:center;">
                 <a class="btn-primary auth-login-submit" href="/auth/google"
                     style="display:inline-flex; align-items:center; justify-content:center; gap:0.6rem; text-decoration:none;">
@@ -22,6 +36,7 @@
                     Entrar com Google
                 </a>
             </div>
+            {% endif %}
         </article>
     </div>
 </section>

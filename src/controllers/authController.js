@@ -22,6 +22,9 @@ module.exports = function createAuthController({ site, authService }) {
 
     function showLogin(req, res) {
         const isInvalidDomain = req.query?.error === "dominio";
+        const isDevMode =
+            process.env.NODE_ENV !== "production" &&
+            process.env.DEV_AUTO_LOGIN === "true";
         renderPage(res, site, {
             currentPath: "",
             template: "auth/login.html",
@@ -31,7 +34,8 @@ module.exports = function createAuthController({ site, authService }) {
             extra: {
                 errorMessage: isInvalidDomain
                     ? "Acesso permitido apenas para e-mails do domínio @ifc.edu.br."
-                    : ""
+                    : "",
+                isDevMode
             }
         });
     }
@@ -158,11 +162,27 @@ module.exports = function createAuthController({ site, authService }) {
         }
     }
 
+    async function devLogin(req, res) {
+        // Só funciona fora de produção e com DEV_AUTO_LOGIN=true
+        if (
+            process.env.NODE_ENV === "production" ||
+            process.env.DEV_AUTO_LOGIN !== "true"
+        ) {
+            return res.redirect("/auth/login");
+        }
+
+        const devUser = { id: 0, email: "dev@localhost" };
+        const token = authService.signToken(devUser);
+        res.cookie("auth_token", token, authService.getCookieOptions());
+        return res.redirect("/admin/projetos");
+    }
+
     return {
         showLogin,
         login,
         logout,
         googleLogin,
-        googleCallback
+        googleCallback,
+        devLogin
     };
 };
