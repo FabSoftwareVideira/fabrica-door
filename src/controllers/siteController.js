@@ -5,11 +5,19 @@ module.exports = function createSiteController({ site, pages, projectService }) 
         res.status(200).send("ok");
     }
 
-    function index(_req, res) {
+    async function index(_req, res) {
+        let featuredProjects = [];
+        try {
+            featuredProjects = await projectService.getFeaturedProjects();
+        } catch (err) {
+            console.error("Erro ao carregar projetos em destaque:", err.message);
+        }
+
         renderPage(res, site, {
             currentPath: "/",
             template: "index.html",
-            page: pages.index
+            page: pages.index,
+            extra: { featuredProjects }
         });
     }
 

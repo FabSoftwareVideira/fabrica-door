@@ -13,6 +13,7 @@ module.exports = function createProjectService(projectModel) {
             title: row.title,
             situacao: row.situacao,
             statusClass: STATUS_CLASS[row.situacao] || "desconhecido",
+            featured: Boolean(row.featured),
             github_url: row.github_url || "",
             published_url: row.published_url || "",
             short_description: row.short_description || "",
@@ -25,6 +26,15 @@ module.exports = function createProjectService(projectModel) {
     async function getAllProjects() {
         const rows = await projectModel.listAll();
         return rows.map(normalizeProjectRow);
+    }
+
+    async function getFeaturedProjects() {
+        if (projectModel.listFeatured) {
+            const rows = await projectModel.listFeatured();
+            return rows.map(normalizeProjectRow);
+        }
+        const all = await getAllProjects();
+        return all.filter((p) => p.featured);
     }
 
     async function getProjectBySlug(slug) {
@@ -51,6 +61,7 @@ module.exports = function createProjectService(projectModel) {
 
     return {
         getAllProjects,
+        getFeaturedProjects,
         getProjectBySlug,
         getProjectById,
         createProject,

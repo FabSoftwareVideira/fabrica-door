@@ -4,6 +4,7 @@ module.exports = function createProjects(_rootDir) {
             slug: "cogercon",
             title: "SGCE - Sistema de Gestão de Cooperativas de Energia",
             situacao: "Concluído",
+            featured: true,
             github_url: "https://github.com/fabricaSoftwareVideira/Cogercon",
             published_url: "https://cogercon.videira.ifc.edu.br",
             short_description: "Sistema web para gestão de cooperativas de energia solar: cadastro de associados, usinas, cobranças e relatórios de faturamento.",

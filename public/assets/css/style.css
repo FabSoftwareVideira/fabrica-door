@@ -975,7 +975,7 @@ footer {
     var(--primary-color-hover)
   );
   color: var(--secondary-color);
-  padding: 50px 0;
+  padding: 15px 0;
   text-align: center;
 }
 

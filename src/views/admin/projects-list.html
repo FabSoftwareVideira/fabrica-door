@@ -128,6 +128,18 @@
         gap: 10px;
     }
 
+    .card-title-wrap {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex: 1;
+    }
+
+    .card-star {
+        font-size: 1rem;
+        flex-shrink: 0;
+    }
+
     .card-title {
         font-size: 1rem;
         font-weight: 700;
@@ -264,6 +276,7 @@
             <button class="filter-btn" data-status="Em Andamento">Em Andamento</button>
             <button class="filter-btn" data-status="Em Planejamento">Em Planejamento</button>
             <button class="filter-btn" data-status="Concluído">Concluído</button>
+            <button class="filter-btn" data-status="featured">⭐ Destaques</button>
         </div>
     </div>
 
@@ -273,10 +286,16 @@
         <article class="project-card"
             data-title="{{ project.title | lower }}"
             data-desc="{{ project.short_description | lower }}"
-            data-status="{{ project.situacao }}">
+            data-status="{{ project.situacao }}"
+            data-featured="{{ 'true' if project.featured else 'false' }}">
 
             <div class="card-header">
-                <h2 class="card-title">{{ project.title }}</h2>
+                <div class="card-title-wrap">
+                    {% if project.featured %}
+                    <span class="card-star" title="Projeto em destaque">⭐</span>
+                    {% endif %}
+                    <h2 class="card-title">{{ project.title }}</h2>
+                </div>
                 <span class="status-badge status-{{ project.statusClass }}">{{ project.situacao }}</span>
             </div>
 
@@ -339,7 +358,13 @@
         function applyFilters() {
             let visible = 0;
             cards.forEach(card => {
-                const matchStatus = !activeStatus || card.dataset.status === activeStatus;
+                let matchStatus = true;
+                if (activeStatus === 'featured') {
+                    matchStatus = card.dataset.featured === 'true';
+                } else if (activeStatus) {
+                    matchStatus = card.dataset.status === activeStatus;
+                }
+
                 const matchSearch = !searchTerm
                     || card.dataset.title.includes(searchTerm)
                     || card.dataset.desc.includes(searchTerm);

@@ -43,6 +43,7 @@ function toFormProject(project) {
             title: "",
             slug: "",
             situacao: "Em Andamento",
+            featured: false,
             github_url: "",
             published_url: "",
             short_description: ""
@@ -53,6 +54,7 @@ function toFormProject(project) {
         title: project.title,
         slug: project.slug,
         situacao: project.situacao,
+        featured: Boolean(project.featured),
         github_url: project.github_url || "",
         published_url: project.published_url || "",
         short_description: project.short_description || ""
@@ -65,6 +67,7 @@ function formProjectFromBody(body, id) {
         title: body.title || "",
         slug: body.slug || "",
         situacao: body.situacao || "Em Andamento",
+        featured: body.featured === "true" || body.featured === "on" || body.featured === true,
         github_url: body.github_url || "",
         published_url: body.published_url || "",
         short_description: body.short_description || ""
@@ -74,10 +77,12 @@ function formProjectFromBody(body, id) {
 function toProjectPayload(form) {
     const title = (form.title || "").trim();
     const slug = slugify(form.slug || title);
+    const featured = form.featured === "true" || form.featured === "on" || form.featured === true;
     return {
         title,
         slug,
         situacao: (form.situacao || "Em Andamento").trim(),
+        featured,
         github_url: (form.github_url || "").trim(),
         published_url: (form.published_url || "").trim(),
         short_description: (form.short_description || "").trim().slice(0, MAX_DESC)
