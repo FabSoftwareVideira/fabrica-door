@@ -1,102 +1,215 @@
-name: Deploy fabrica-door
+
+name: CI/CD
 
 on:
   push:
-    # branches:
-    #   - main
-    tags:
-      - "v*"
+    branches: [main]
+
+  pull_request:
+
+  # Permite solicitar um novo deploy manualmente
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
-  deploy:
-    name: 🚀 Deploy App
-    runs-on: self-hosted
-    env:
-      CONTAINER_NAME: fabrica-prod-door
-      COMPOSE_FILE: docker-compose.prod.yml # Centralizado para facilitar futuras trocas
+  testes:
+    name: Testes e validações
+    runs-on: ubuntu-latest
 
     steps:
-      # ── 1. PREPARAÇÃO ───────────────────────────────────────────────────────
-      - name: 📂 Checkout do Código
+      - name: Checkout do código
         uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
         with:
-          fetch-depth: 0
+          node-version: "25"
+          cache: npm
 
-      - name: 🏷️ Definir versão do build
+      - name: Instalar dependências
+        run: npm ci
+
+      # O projeto ainda não possui suíte de testes automatizados.
+      # Até sua criação, verificamos a sintaxe de todos os arquivos JS.
+      - name: Validar sintaxe JavaScript
         run: |
-          echo "IMAGE_TAG=${GITHUB_REF_NAME}" >> $GITHUB_ENV
-          echo "GIT_COMMIT=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
-          echo "BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_ENV
+          find src -type f -name "*.js" -print0 |
+            xargs -0 -r -n1 node --check
 
-      - name: 🔍 Validar Secrets Obrigatórias
+          node --check entrypoint.sh 2>/dev/null || true
+
+      # Auditoria das dependências de produção
+      - name: Auditar dependências
+        run: npm audit --omit=dev
+
+      # Verifica se a imagem de produção continua construindo
+      - name: Build Docker
+        run: |
+          docker build \
+            --target production \
+            -t fabrica-door:ci .
+
+      # Valida o Compose de produção
+      - name: Validar Docker Compose
         env:
-          PROD_ENV_FILE: ${{ secrets.PROD_ENV_FILE }}
+          PGPASSWORD: ci-password-not-used
+          JWT_SECRET: ci-secret-not-used
         run: |
-          echo "Verificando secrets..."
-          [ -z "$PROD_ENV_FILE" ] && { echo "❌ Secret PROD_ENV_FILE ausente"; exit 1; }
-          echo "✅ Secrets presentes."
+          docker compose \
+            -f docker-compose.prod.yml \
+            config --quiet
 
-      - name: 🔐 Montar arquivo .env
+  deploy:
+    name: Deploy no Dokploy
+    needs: testes
+
+    if: >
+      github.event_name != 'pull_request' &&
+      github.ref == 'refs/heads/main'
+
+    runs-on: ubuntu-latest
+
+    # Evita dois deploys simultâneos
+    concurrency:
+      group: deploy-producao
+      cancel-in-progress: false
+
+    steps:
+      - name: Solicitar deploy ao Dokploy
         env:
-          PROD_ENV_FILE: ${{ secrets.PROD_ENV_FILE }}
+          DOKPLOY_URL: ${{ secrets.DOKPLOY_URL }}
+          DOKPLOY_API_KEY: ${{ secrets.DOKPLOY_API_KEY }}
+          DOKPLOY_COMPOSE_ID: ${{ secrets.DOKPLOY_COMPOSE_ID }}
+
         run: |
-          echo "$PROD_ENV_FILE" > .env
-          echo "✅ .env gerado."
+          set -e
 
-      - name: 🛠️ Validar Ambiente e Arquivos
-        run: |
-          echo "Verificando arquivos críticos..."
-          MISSING_FILES=()
-          [ ! -f "$COMPOSE_FILE" ] && MISSING_FILES+=("$COMPOSE_FILE")
-          [ ! -f .env ]             && MISSING_FILES+=(".env")
+          for v in DOKPLOY_URL DOKPLOY_API_KEY DOKPLOY_COMPOSE_ID; do
+            if [ -z "${!v}" ]; then
+              echo "::error::Defina o secret $v."
+              exit 1
+            fi
+          done
 
-          if [ ${#MISSING_FILES[@]} -ne 0 ]; then
-            echo "❌ ERRO: Arquivos ausentes: ${MISSING_FILES[*]}"
-            exit 1
-          fi
+          echo "Solicitando deploy ao Dokploy..."
 
-          echo "Validando sintaxe do $COMPOSE_FILE..."
-          if ! docker compose -f "$COMPOSE_FILE" --env-file .env config -q; then
-            echo "❌ ERRO: $COMPOSE_FILE possui erros de sintaxe."
-            exit 1
-          fi
+          curl \
+            --fail-with-body \
+            --silent \
+            --show-error \
+            --retry 2 \
+            --retry-delay 5 \
+            -X POST \
+            "${DOKPLOY_URL%/}/api/compose.deploy" \
+            -H "x-api-key: ${DOKPLOY_API_KEY}" \
+            -H "Content-Type: application/json" \
+            -d "{\"composeId\":\"${DOKPLOY_COMPOSE_ID}\"}"
 
-      # ── 2. EXECUÇÃO ─────────────────────────────────────────────────────────
-      - name: 🐳 Atualizar e Subir Containers
-        run: |
-          echo "Gatilho: ${{ github.ref_name }}"
-          echo "Versão: $IMAGE_TAG"
-          echo "Commit: $GIT_COMMIT"
+          echo ""
+          echo "Deploy solicitado com sucesso."
+          echo "Acompanhe o build na aba Deployments do Dokploy."
 
-          # echo "Puxando imagens novas..."
-          # docker compose -f "$COMPOSE_FILE" --env-file .env pull --quiet
+# name: Deploy fabrica-door
 
-          echo "Iniciando serviços com $COMPOSE_FILE..."
-          docker compose -f "$COMPOSE_FILE" --env-file .env up -d --build --remove-orphans
+# on:
+#   push:
+#     branches:
+#       - main
+#     tags:
+#       - "v*"
+#   workflow_dispatch:
 
-      # ── 3. VERIFICAÇÃO PÓS-DEPLOY ────────────────────────────────────────────
-      - name: ⏳ Aguardar Estabilização
-        run: |
-          sleep 10
-          UNHEALTHY=$(docker compose -f "$COMPOSE_FILE" ps --format json \
-            | grep -E '"State":"(exited|dead|restarting|unhealthy)"' || true)
+# jobs:
+#   deploy:
+#     name: 🚀 Deploy App
+#     runs-on: self-hosted
+#     env:
+#       CONTAINER_NAME: fabrica-prod-door
+#       COMPOSE_FILE: docker-compose.prod.yml # Centralizado para facilitar futuras trocas
 
-          if [ -n "$UNHEALTHY" ]; then
-            echo "❌ ERRO: Containers em estado inválido."
-            docker compose -f "$COMPOSE_FILE" ps
-            exit 1
-          fi
+#     steps:
+#       # ── 1. PREPARAÇÃO ───────────────────────────────────────────────────────
+#       - name: 📂 Checkout do Código
+#         uses: actions/checkout@v4
+#         with:
+#           fetch-depth: 0
 
-          if ! docker ps --format '{{.Names}}' | grep -Fxq "$CONTAINER_NAME"; then
-            echo "❌ ERRO: Container '$CONTAINER_NAME' não subiu."
-            exit 1
-          fi
+#       - name: 🏷️ Definir versão do build
+#         run: |
+#           echo "IMAGE_TAG=${GITHUB_REF_NAME}" >> $GITHUB_ENV
+#           echo "GIT_COMMIT=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+#           echo "BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_ENV
 
-      # ── 4. MANUTENÇÃO ────────────────────────────────────────────────────────
-      - name: 🧹 Limpeza Final
-        if: always()
-        run: |
-          docker image prune -f
-          rm -f .env
-          echo "✅ Deploy finalizado e ambiente limpo."
+#       - name: 🔍 Validar Secrets Obrigatórias
+#         env:
+#           PROD_ENV_FILE: ${{ secrets.PROD_ENV_FILE }}
+#         run: |
+#           echo "Verificando secrets..."
+#           [ -z "$PROD_ENV_FILE" ] && { echo "❌ Secret PROD_ENV_FILE ausente"; exit 1; }
+#           echo "✅ Secrets presentes."
+
+#       - name: 🔐 Montar arquivo .env
+#         env:
+#           PROD_ENV_FILE: ${{ secrets.PROD_ENV_FILE }}
+#         run: |
+#           echo "$PROD_ENV_FILE" > .env
+#           echo "✅ .env gerado."
+
+#       - name: 🛠️ Validar Ambiente e Arquivos
+#         run: |
+#           echo "Verificando arquivos críticos..."
+#           MISSING_FILES=()
+#           [ ! -f "$COMPOSE_FILE" ] && MISSING_FILES+=("$COMPOSE_FILE")
+#           [ ! -f .env ]             && MISSING_FILES+=(".env")
+
+#           if [ ${#MISSING_FILES[@]} -ne 0 ]; then
+#             echo "❌ ERRO: Arquivos ausentes: ${MISSING_FILES[*]}"
+#             exit 1
+#           fi
+
+#           echo "Validando sintaxe do $COMPOSE_FILE..."
+#           if ! docker compose -f "$COMPOSE_FILE" --env-file .env config -q; then
+#             echo "❌ ERRO: $COMPOSE_FILE possui erros de sintaxe."
+#             exit 1
+#           fi
+
+#       # ── 2. EXECUÇÃO ─────────────────────────────────────────────────────────
+#       - name: 🐳 Atualizar e Subir Containers
+#         run: |
+#           echo "Gatilho: ${{ github.ref_name }}"
+#           echo "Versão: $IMAGE_TAG"
+#           echo "Commit: $GIT_COMMIT"
+
+#           # echo "Puxando imagens novas..."
+#           # docker compose -f "$COMPOSE_FILE" --env-file .env pull --quiet
+
+#           echo "Iniciando serviços com $COMPOSE_FILE..."
+#           docker compose -f "$COMPOSE_FILE" --env-file .env up -d --build --remove-orphans
+
+#       # ── 3. VERIFICAÇÃO PÓS-DEPLOY ────────────────────────────────────────────
+#       - name: ⏳ Aguardar Estabilização
+#         run: |
+#           sleep 10
+#           UNHEALTHY=$(docker compose -f "$COMPOSE_FILE" ps --format json \
+#             | grep -E '"State":"(exited|dead|restarting|unhealthy)"' || true)
+
+#           if [ -n "$UNHEALTHY" ]; then
+#             echo "❌ ERRO: Containers em estado inválido."
+#             docker compose -f "$COMPOSE_FILE" ps
+#             exit 1
+#           fi
+
+#           if ! docker ps --format '{{.Names}}' | grep -Fxq "$CONTAINER_NAME"; then
+#             echo "❌ ERRO: Container '$CONTAINER_NAME' não subiu."
+#             exit 1
+#           fi
+
+#       # ── 4. MANUTENÇÃO ────────────────────────────────────────────────────────
+#       - name: 🧹 Limpeza Final
+#         if: always()
+#         run: |
+#           docker image prune -f
+#           rm -f .env
+#           echo "✅ Deploy finalizado e ambiente limpo."

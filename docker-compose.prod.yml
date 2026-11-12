@@ -1,62 +1,146 @@
+
 services:
   app:
     build:
       context: .
+      dockerfile: Dockerfile
       target: production
-    container_name: fabrica-prod-door
-    image: fabrica-prod-door:${IMAGE_TAG:-latest}
-    labels:
-      app.name: "Fábrica de Software - IFC Videira"
-      app.environment: "production"
-      app.url: "https://fabrica.videira.ifc.edu.br"
-      app.version: "${IMAGE_TAG:-dev}"
-      app.git-commit: "${GIT_COMMIT:-unknown}"
-      app.build-date: "${BUILD_DATE:-unknown}"
-    ports:
-      - "${PORT:-8000}:${PORT:-8000}"
-    env_file:
-      - .env
+
+    image: fabrica-door:${IMAGE_TAG:-latest}
+    restart: unless-stopped
+
+    expose:
+      - "8000"
+
     environment:
       NODE_ENV: production
-      IMAGE_TAG: ${IMAGE_TAG}
-      GIT_COMMIT: ${GIT_COMMIT}
-      BUILD_DATE: ${BUILD_DATE}
+      ENVIRONMENT: production
+      PORT: "8000"
+
+      SITE_NAME: "Fábrica de Software - IFC Videira"
+      SITE_URL: "https://fabrica.labia.ifc.edu.br"
+
+      EMAIL_FABRICA: ${EMAIL_FABRICA}
+      GOOGLE_ANALYTICS: ${GOOGLE_ANALYTICS:-}
+      API_KEY: ${API_KEY:-}
+
+      LOG_LEVEL: INFO
+
+      # PostgreSQL
+      PGHOST: db
+      PGPORT: "5432"
+      PGDATABASE: ${PGDATABASE:-fabrica_door}
+      PGUSER: ${PGUSER:-fabrica}
+      PGPASSWORD: ${PGPASSWORD:?Configure PGPASSWORD}
+
+      # JWT
+      JWT_SECRET: ${JWT_SECRET:?Configure JWT_SECRET}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-8h}
+
+      # Google OAuth (opcional)
+      GOOGLE_OAUTH_CLIENT_ID: ${GOOGLE_OAUTH_CLIENT_ID:-}
+      GOOGLE_OAUTH_CLIENT_SECRET: ${GOOGLE_OAUTH_CLIENT_SECRET:-}
+
     volumes:
-      - fabrica-prod-uploads:/app/public/assets/uploads
+      - fabrica-door-uploads:/app/public/assets/uploads
+
     networks:
-      - fabrica-network
+      - default
+      - dokploy-network
+
+    depends_on:
+      db:
+        condition: service_healthy
+
     healthcheck:
-      test: [ "CMD", "wget", "--spider", "-q", "http://127.0.0.1:${PORT:-8000}/health" ]
-      start_period: 20s
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:8000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
       interval: 30s
       timeout: 5s
       retries: 3
-    restart: unless-stopped
+      start_period: 20s
+
+    security_opt:
+      - no-new-privileges:true
+
+    cap_drop:
+      - ALL
+
+    read_only: true
+
+    tmpfs:
+      - /tmp:size=32m,mode=1777
+
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+          cpus: "1.0"
+          pids: 128
+
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   db:
     image: postgres:18-alpine
-    container_name: fabrica-prod-db
+    restart: unless-stopped
+
     environment:
-      PGDATA: /var/lib/postgresql/data
+      PGDATA: /var/lib/postgresql/18/docker
       POSTGRES_DB: ${PGDATABASE:-fabrica_door}
-      POSTGRES_USER: ${PGUSER:-postgres}
-      POSTGRES_PASSWORD: ${PGPASSWORD:-postgres}
+      POSTGRES_USER: ${PGUSER:-fabrica}
+      POSTGRES_PASSWORD: ${PGPASSWORD:?Configure PGPASSWORD}
+
     volumes:
-      - fabrica_prod_data:/var/lib/postgresql/data
-      - ./src/db/migrations:/docker-entrypoint-initdb.d
+      - fabrica-door-db-data:/var/lib/postgresql
+
+      # Executados somente na inicialização de um banco vazio
+      - ./src/db/migrations:/docker-entrypoint-initdb.d:ro
+
     networks:
-      - fabrica-network
+      - default
+
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${PGUSER:-postgres} -d ${PGDATABASE:-fabrica_door}" ]
+      test:
+        - CMD-SHELL
+        - pg_isready -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"
       interval: 10s
       timeout: 5s
       retries: 5
-    restart: unless-stopped
+      start_period: 15s
+
+    security_opt:
+      - no-new-privileges:true
+
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+          cpus: "0.5"
+          pids: 128
+
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 
 volumes:
-  fabrica_prod_data:
-  fabrica-prod-uploads:
+  fabrica-door-db-data:
+    name: fabrica-door-db-data
+
+  fabrica-door-uploads:
+    name: fabrica-door-uploads
 
 networks:
-  fabrica-network:
+  default:
+    driver: bridge
+
+  dokploy-network:
     external: true

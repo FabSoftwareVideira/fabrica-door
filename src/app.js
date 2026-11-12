@@ -110,6 +110,27 @@ function createApp() {
         });
     });
 
+
+    // Healthcheck para Docker e Dokploy
+    app.get("/health", async (_req, res) => {
+        try {
+            await db.query("SELECT 1");
+
+            return res.status(200).json({
+                status: "ok",
+                database: "connected"
+            });
+        } catch (error) {
+            console.error("[HEALTHCHECK] Database unavailable:", error.message);
+
+            return res.status(503).json({
+                status: "error",
+                database: "unavailable"
+            });
+        }
+    });
+
+
     return app;
 }
 
