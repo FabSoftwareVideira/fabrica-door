@@ -264,6 +264,13 @@ nav a:active::after {
   color: var(--primary-color);
 }
 
+.nav-user-email {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .nav-dropdown-arrow {
   font-size: 0.7rem;
   transition: transform 0.2s;

@@ -21,6 +21,7 @@ module.exports = function renderPage(res, site, options) {
         current_year: new Date().getFullYear(),
         currentPath,
         isAuthenticated: Boolean(res.locals?.isAuthenticated),
+        user: res.locals?.user || null,
         page,
         ...extra
     });
