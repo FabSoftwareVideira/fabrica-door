@@ -48,31 +48,6 @@ module.exports = function createSiteController({ site, pages, projectService }) 
         });
     }
 
-    async function projetoPorSlug(req, res) {
-        const project = await projectService.getProjectBySlug(req.params.slug);
-
-        if (!project) {
-            console.log(`Projeto não encontrado: ${req.params.slug}`);
-
-            res.status(404);
-            return renderPage(res, site, {
-                currentPath: "/projetos",
-                template: "page.html",
-                page: {
-                    title: "Página não encontrada",
-                    content: "<h1>Página não encontrada</h1><p>O conteúdo solicitado não está disponível.</p>",
-                    show_header: false
-                }
-            });
-        }
-
-        renderPage(res, site, {
-            currentPath: "/projetos",
-            template: "project.html",
-            page: project
-        });
-    }
-
     function notFound(req, res) {
         res.status(404);
         renderPage(res, site, {
@@ -92,7 +67,6 @@ module.exports = function createSiteController({ site, pages, projectService }) 
         projetos,
         equipe,
         contato,
-        projetoPorSlug,
         notFound
     };
 };

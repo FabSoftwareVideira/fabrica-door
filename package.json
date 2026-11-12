@@ -4,8 +4,11 @@
     "private": true,
     "description": "Site da Fábrica de Software do IFC Videira",
     "scripts": {
+        "prestart": "npm run migrate",
         "start": "node src/server.js",
+        "predev": "npm run migrate",
         "dev": "node --watch src/server.js",
+        "migrate": "node src/db/migrate.js",
         "hash-password": "node src/db/hashPassword.js"
     },
     "engines": {

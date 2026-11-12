@@ -1,32 +1,22 @@
 module.exports = function createProjectService(projectModel) {
+    const STATUS_CLASS = {
+        "Em Andamento": "andamento",
+        "Concluído": "concluido",
+        "Em Planejamento": "planejamento"
+    };
+
     function normalizeProjectRow(row) {
-        if (!row) {
-            return null;
-        }
-
-        const statusClassMap = {
-            "Em Andamento": "andamento",
-            "Concluído": "concluido",
-            "Em Planejamento": "planejamento"
-        };
-
+        if (!row) return null;
         return {
             id: row.id,
             slug: row.slug,
             title: row.title,
             situacao: row.situacao,
-            statusClass: statusClassMap[row.situacao] || "desconhecido",
-            start_date: row.start_date || "",
-            end_date: row.end_date || "",
-            featured_image: row.featured_image || "",
-            galleryList: Array.isArray(row.gallery_list) ? row.gallery_list : [],
+            statusClass: STATUS_CLASS[row.situacao] || "desconhecido",
             github_url: row.github_url || "",
             published_url: row.published_url || "",
-            technologiesList: Array.isArray(row.technologies_list) ? row.technologies_list : [],
-            membersList: Array.isArray(row.members_list) ? row.members_list : [],
-            key_featuresList: Array.isArray(row.key_features_list) ? row.key_features_list : [],
+            short_description: row.short_description || "",
             url: `/projetos/${row.slug}`,
-            content: row.content || "",
             created_at: row.created_at,
             updated_at: row.updated_at
         };

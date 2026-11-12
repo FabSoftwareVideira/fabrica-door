@@ -2,54 +2,369 @@
 
 {% block title %}Gerenciar Projetos - {{ SITENAME }}{% endblock %}
 
-{% block content %}
-<section class="admin-projects-list-section">
-    <div class="container">
-        <div class="admin-projects-list-header">
-            <h1>Gerenciar projetos</h1>
-            <div class="admin-projects-list-header-actions">
-                <a href="/admin/projetos/novo" class="btn-primary">Novo projeto</a>
-            </div>
-        </div>
+{% block extra_head %}
+<style>
+    .admin-projects {
+        max-width: 1100px;
+        margin: 36px auto;
+        padding: 0 20px 60px;
+    }
 
-        {% if projects.length %}
-        <div class="admin-projects-list-table-wrap">
-            <table class="admin-projects-list-table">
-                <thead>
-                    <tr>
-                        <th>Título</th>
-                        <th>Slug</th>
-                        <th>Situação</th>
-                        <th>Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for project in projects %}
-                    <tr>
-                        <td>
-                            <a target="_blank" href="/projetos/{{ project.slug }}">{{ project.title }}</a>
-                        </td>
-                        <td>{{ project.slug }}</td>
-                        <td>
-                            <span class="status-badge status-{{ project.statusClass }}">{{ project.situacao }}</span>
-                        </td>
-                        <td class="admin-projects-list-actions">
-                            <a class="action-icon" href="/admin/projetos/{{ project.id }}/editar" title="Editar"><i
-                                    class="fa-solid fa-pen"></i></a>
-                            <form method="post" action="/admin/projetos/{{ project.id }}/excluir"
-                                onsubmit="return confirm('Excluir este projeto?')">
-                                <button type="submit" class="action-icon" title="Excluir"><i
-                                        class="fa-solid fa-trash"></i></button>
-                            </form>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        {% else %}
-        <p class="admin-projects-list-empty">Nenhum projeto cadastrado ainda.</p>
-        {% endif %}
+    /* ── Header ── */
+    .admin-projects-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 24px;
+    }
+
+    .admin-projects-header h1 { margin: 0; }
+
+    /* ── Filtros ── */
+    .admin-filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 24px;
+        align-items: center;
+    }
+
+    .admin-search {
+        flex: 1;
+        min-width: 220px;
+        position: relative;
+    }
+
+    .admin-search i {
+        position: absolute;
+        left: 11px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #aaa;
+        font-size: 0.9rem;
+        pointer-events: none;
+    }
+
+    .admin-search input {
+        width: 100%;
+        padding: 9px 12px 9px 34px;
+        border: 1.5px solid #ccc;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        font-family: inherit;
+        background: #fafafa;
+        box-sizing: border-box;
+        transition: border-color 0.18s;
+    }
+
+    .admin-search input:focus {
+        outline: none;
+        border-color: var(--primary-color, #860083);
+        background: #fff;
+    }
+
+    .filter-status {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+
+    .filter-btn {
+        padding: 7px 14px;
+        border: 1.5px solid #ccc;
+        border-radius: 20px;
+        background: #fff;
+        font-size: 0.82rem;
+        font-family: inherit;
+        cursor: pointer;
+        color: #555;
+        transition: all 0.15s;
+        white-space: nowrap;
+    }
+
+    .filter-btn:hover {
+        border-color: var(--primary-color, #860083);
+        color: var(--primary-color, #860083);
+    }
+
+    .filter-btn.active {
+        background: var(--primary-color, #860083);
+        border-color: var(--primary-color, #860083);
+        color: #fff;
+    }
+
+    /* ── Grid de cards ── */
+    .projects-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 18px;
+    }
+
+    .project-card {
+        background: #fff;
+        border: 1px solid #e0e0e0;
+        border-radius: 10px;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        transition: box-shadow 0.18s, border-color 0.18s;
+    }
+
+    .project-card:hover {
+        box-shadow: 0 4px 16px rgba(0,0,0,.08);
+        border-color: #ccc;
+    }
+
+    .project-card[data-hidden="true"] { display: none; }
+
+    /* ── Card header ── */
+    .card-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 10px;
+    }
+
+    .card-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #222;
+        margin: 0;
+        line-height: 1.3;
+    }
+
+    /* ── Badge de status ── */
+    .status-badge {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    .status-andamento   { background: #e3f2fd; color: #1565c0; }
+    .status-concluido   { background: #e8f5e9; color: #2e7d32; }
+    .status-planejamento { background: #fff3e0; color: #e65100; }
+    .status-desconhecido { background: #f5f5f5; color: #666; }
+
+    /* ── Descrição ── */
+    .card-desc {
+        font-size: 0.87rem;
+        color: #555;
+        line-height: 1.5;
+        margin: 0;
+        flex: 1;
+    }
+
+    /* ── Footer do card ── */
+    .card-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 4px;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .card-links {
+        display: flex;
+        gap: 8px;
+    }
+
+    .card-link-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 6px;
+        background: #f4f4f4;
+        color: #555;
+        font-size: 0.95rem;
+        text-decoration: none;
+        transition: background 0.15s, color 0.15s;
+    }
+
+    .card-link-icon:hover { background: var(--primary-color, #860083); color: #fff; }
+    .card-link-icon.disabled { opacity: 0.3; pointer-events: none; }
+
+    .card-actions {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+    }
+
+    .action-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 6px;
+        background: #f4f4f4;
+        color: #555;
+        font-size: 0.85rem;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+        transition: background 0.15s, color 0.15s;
+    }
+
+    .action-icon:hover { background: #e0e0e0; color: #222; }
+    .action-icon.danger:hover { background: #fbe9e9; color: #c0392b; }
+
+    /* ── Estado vazio / sem resultados ── */
+    .admin-projects-empty {
+        text-align: center;
+        color: #888;
+        padding: 60px 20px;
+        font-size: 0.95rem;
+    }
+
+    .no-results {
+        display: none;
+        text-align: center;
+        color: #888;
+        padding: 40px 20px;
+        font-size: 0.95rem;
+    }
+
+    .no-results.show { display: block; }
+
+    @media (max-width: 540px) {
+        .admin-filters { flex-direction: column; align-items: stretch; }
+        .filter-status { justify-content: flex-start; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="admin-projects">
+
+    <div class="admin-projects-header">
+        <h1>Gerenciar projetos</h1>
+        <a href="/admin/projetos/novo" class="btn-primary">+ Novo projeto</a>
     </div>
+
+    {% if projects.length %}
+
+    {# ── Filtros ── #}
+    <div class="admin-filters">
+        <div class="admin-search">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Buscar pelo título ou descrição…" autocomplete="off" />
+        </div>
+        <div class="filter-status">
+            <button class="filter-btn active" data-status="">Todos</button>
+            <button class="filter-btn" data-status="Em Andamento">Em Andamento</button>
+            <button class="filter-btn" data-status="Em Planejamento">Em Planejamento</button>
+            <button class="filter-btn" data-status="Concluído">Concluído</button>
+        </div>
+    </div>
+
+    {# ── Grid de cards ── #}
+    <div class="projects-grid" id="projectsGrid">
+        {% for project in projects %}
+        <article class="project-card"
+            data-title="{{ project.title | lower }}"
+            data-desc="{{ project.short_description | lower }}"
+            data-status="{{ project.situacao }}">
+
+            <div class="card-header">
+                <h2 class="card-title">{{ project.title }}</h2>
+                <span class="status-badge status-{{ project.statusClass }}">{{ project.situacao }}</span>
+            </div>
+
+            {% if project.short_description %}
+            <p class="card-desc">{{ project.short_description }}</p>
+            {% else %}
+            <p class="card-desc" style="color:#bbb;font-style:italic;">Sem descrição.</p>
+            {% endif %}
+
+            <div class="card-footer">
+                <div class="card-links">
+                    <a class="card-link-icon {% if not project.github_url %}disabled{% endif %}"
+                        href="{{ project.github_url or '#' }}"
+                        target="_blank" rel="noopener noreferrer"
+                        title="{% if project.github_url %}Ver no GitHub{% else %}GitHub não informado{% endif %}">
+                        <i class="fab fa-github"></i>
+                    </a>
+                    <a class="card-link-icon {% if not project.published_url %}disabled{% endif %}"
+                        href="{{ project.published_url or '#' }}"
+                        target="_blank" rel="noopener noreferrer"
+                        title="{% if project.published_url %}Abrir site{% else %}Site não publicado{% endif %}">
+                        <i class="fas fa-globe"></i>
+                    </a>
+                </div>
+
+                <div class="card-actions">
+                    <a class="action-icon" href="/admin/projetos/{{ project.id }}/editar" title="Editar">
+                        <i class="fa-solid fa-pen"></i>
+                    </a>
+                    <form method="post" action="/admin/projetos/{{ project.id }}/excluir"
+                        onsubmit="return confirm('Excluir o projeto \"{{ project.title }}\"?')">
+                        <button type="submit" class="action-icon danger" title="Excluir">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+
+    <p class="no-results" id="noResults">Nenhum projeto encontrado para os filtros selecionados.</p>
+
+    {% else %}
+    <p class="admin-projects-empty">Nenhum projeto cadastrado ainda. <a href="/admin/projetos/novo">Criar o primeiro</a>.</p>
+    {% endif %}
+
 </section>
+
+<script>
+    (function () {
+        const searchEl  = document.getElementById('searchInput');
+        const noResults = document.getElementById('noResults');
+        const cards     = Array.from(document.querySelectorAll('.project-card'));
+        const filterBtns = Array.from(document.querySelectorAll('.filter-btn'));
+
+        let activeStatus = '';
+        let searchTerm   = '';
+
+        function applyFilters() {
+            let visible = 0;
+            cards.forEach(card => {
+                const matchStatus = !activeStatus || card.dataset.status === activeStatus;
+                const matchSearch = !searchTerm
+                    || card.dataset.title.includes(searchTerm)
+                    || card.dataset.desc.includes(searchTerm);
+                const show = matchStatus && matchSearch;
+                card.dataset.hidden = show ? 'false' : 'true';
+                if (show) visible++;
+            });
+            if (noResults) noResults.classList.toggle('show', visible === 0);
+        }
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                activeStatus = btn.dataset.status;
+                applyFilters();
+            });
+        });
+
+        if (searchEl) {
+            searchEl.addEventListener('input', () => {
+                searchTerm = searchEl.value.toLowerCase().trim();
+                applyFilters();
+            });
+        }
+    })();
+</script>
 {% endblock %}

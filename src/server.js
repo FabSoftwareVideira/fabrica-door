@@ -1,9 +1,23 @@
 require("dotenv").config();
 
 const createApp = require("./app");
-const port = Number(process.env.PORT || 8000);
-const app = createApp();
+const runMigrations = require("./db/migrate");
 
-app.listen(port, () => {
-    console.log(`Servidor iniciado em http://localhost:${port}`);
-});
+const port = Number(process.env.PORT || 8000);
+
+async function start() {
+    try {
+        await runMigrations();
+    } catch (err) {
+        console.error("[SERVER] Falha ao executar migrações. Encerrando processo:", err);
+        process.exit(1);
+    }
+
+    const app = createApp();
+
+    app.listen(port, () => {
+        console.log(`Servidor iniciado em http://localhost:${port}`);
+    });
+}
+
+start();

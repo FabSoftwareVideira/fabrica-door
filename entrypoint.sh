@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 set -e
 
@@ -7,15 +7,17 @@ if [ -z "$PORT" ]; then
     exit 1
 fi
 
-# Detectar o ambiente
 NODE_ENV=${NODE_ENV:-production}
 
-echo "Iniciando servidor em modo $NODE_ENV na porta $PORT..."
+echo "[DOCKER] Executando migrações automáticas do banco de dados..."
+npm run migrate
+
+echo "[DOCKER] Iniciando servidor em modo $NODE_ENV na porta $PORT..."
 
 if [ "$NODE_ENV" = "development" ]; then
-    echo "Modo de desenvolvimento - recarregando em tempo real"
+    echo "[DOCKER] Modo de desenvolvimento - recarregando em tempo real"
     exec npm run dev
 else
-    echo "Modo de produção"
+    echo "[DOCKER] Modo de produção"
     exec npm start
 fi
