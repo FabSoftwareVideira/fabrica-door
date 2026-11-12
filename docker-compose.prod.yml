@@ -10,31 +10,34 @@ services:
     restart: unless-stopped
 
     expose:
-      - "8000"
+      - "${PORT:-8000}"
+
+    env_file:
+      - path: .env
+        required: false
 
     environment:
+      # Overrides fixos de produção — não alterar
       NODE_ENV: production
-      ENVIRONMENT: production
-      PORT: "8000"
+      PGHOST: db
 
-      SITE_NAME: "Fábrica de Software - IFC Videira"
-      SITE_URL: "https://fabrica.labia.ifc.edu.br"
-
+      # Valores configuráveis via .env (ou aba Environment do Dokploy)
+      PORT: ${PORT:-8000}
+      SITE_NAME: ${SITE_NAME}
+      SITE_URL: ${SITE_URL}
       EMAIL_FABRICA: ${EMAIL_FABRICA}
       GOOGLE_ANALYTICS: ${GOOGLE_ANALYTICS:-}
       API_KEY: ${API_KEY:-}
-
-      LOG_LEVEL: INFO
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
 
       # PostgreSQL
-      PGHOST: db
-      PGPORT: "5432"
+      PGPORT: ${PGPORT:-5432}
       PGDATABASE: ${PGDATABASE:-fabrica_door}
       PGUSER: ${PGUSER:-fabrica}
-      PGPASSWORD: ${PGPASSWORD:?Configure PGPASSWORD}
+      PGPASSWORD: ${PGPASSWORD:?Configure PGPASSWORD no .env}
 
       # JWT
-      JWT_SECRET: ${JWT_SECRET:?Configure JWT_SECRET}
+      JWT_SECRET: ${JWT_SECRET:?Configure JWT_SECRET no .env}
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-8h}
 
       # Google OAuth (opcional)
@@ -54,10 +57,8 @@ services:
 
     healthcheck:
       test:
-        - CMD
-        - node
-        - -e
-        - "fetch('http://127.0.0.1:8000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+        - CMD-SHELL
+        - "node -e \"fetch('http://127.0.0.1:' + (process.env.PORT||'8000') + '/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))\""
       interval: 30s
       timeout: 5s
       retries: 3
@@ -95,7 +96,7 @@ services:
       PGDATA: /var/lib/postgresql/18/docker
       POSTGRES_DB: ${PGDATABASE:-fabrica_door}
       POSTGRES_USER: ${PGUSER:-fabrica}
-      POSTGRES_PASSWORD: ${PGPASSWORD:?Configure PGPASSWORD}
+      POSTGRES_PASSWORD: ${PGPASSWORD:?Configure PGPASSWORD no .env}
 
     volumes:
       - fabrica-door-db-data:/var/lib/postgresql
