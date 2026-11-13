@@ -4,238 +4,45 @@
 <meta name="description"
   content="Fábrica de Software - Desenvolvendo soluções tecnológicas para transformar a educação" />
 <link rel="stylesheet" href="{{ SITEURL }}/assets/css/index.css">
-<style>
-  /* ── Carrossel Minimalista de Projetos em Destaque ── */
-  .featured-carousel-section {
-    padding: 48px 0 40px;
-    background: #fbfbfb;
-    border-bottom: 1px solid #eee;
-  }
-
-  .featured-header {
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    margin-bottom: 22px;
-    flex-wrap: wrap;
-    gap: 16px;
-  }
-
-  .featured-title-wrap {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  .featured-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 0.78rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--primary-color, #860083);
-  }
-
-  .featured-header h2 {
-    font-size: 1.55rem;
-    font-weight: 700;
-    margin: 0;
-    color: #1a1a1a;
-  }
-
-  .featured-controls {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .featured-all-link {
-    font-size: 0.88rem;
-    font-weight: 600;
-    color: var(--primary-color, #860083);
-    text-decoration: none;
-    margin-right: 8px;
-    transition: opacity 0.2s;
-  }
-
-  .featured-all-link:hover {
-    text-decoration: underline;
-  }
-
-  .carousel-nav-btn {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    border: 1.5px solid #dcdcdc;
-    background: #fff;
-    color: #333;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.18s;
-    font-size: 0.85rem;
-  }
-
-  .carousel-nav-btn:hover:not(:disabled) {
-    background: var(--primary-color, #860083);
-    border-color: var(--primary-color, #860083);
-    color: #fff;
-  }
-
-  .carousel-nav-btn:disabled {
-    opacity: 0.3;
-    cursor: default;
-  }
-
-  .featured-carousel-wrapper {
-    position: relative;
-    overflow: hidden;
-  }
-
-  .featured-carousel-track {
-    display: flex;
-    gap: 20px;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    scroll-behavior: smooth;
-    padding: 6px 4px 16px;
-    scrollbar-width: thin;
-    scrollbar-color: #ddd transparent;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .featured-carousel-track::-webkit-scrollbar {
-    height: 6px;
-  }
-
-  .featured-carousel-track::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  .featured-carousel-track::-webkit-scrollbar-thumb {
-    background: #ddd;
-    border-radius: 4px;
-  }
-
-  .featured-card {
-    flex: 0 0 320px;
-    scroll-snap-align: start;
-    background: #fff;
-    border: 1px solid #e5e5e5;
-    border-radius: 12px;
-    padding: 22px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
-  }
-
-  .featured-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-    border-color: #ccc;
-  }
-
-  .featured-card-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 10px;
-  }
-
-  .featured-card-title {
-    font-size: 1.05rem;
-    font-weight: 700;
-    color: #1a1a1a;
-    margin: 0;
-    line-height: 1.35;
-  }
-
-  .status-badge {
-    display: inline-block;
-    padding: 3px 9px;
-    border-radius: 20px;
-    font-size: 0.7rem;
-    font-weight: 700;
-    white-space: nowrap;
-    flex-shrink: 0;
-  }
-
-  .status-andamento    { background: #e3f2fd; color: #1565c0; }
-  .status-concluido    { background: #e8f5e9; color: #2e7d32; }
-  .status-planejamento { background: #fff3e0; color: #e65100; }
-  .status-desconhecido { background: #f5f5f5; color: #666; }
-
-  .featured-card-desc {
-    font-size: 0.88rem;
-    color: #555;
-    line-height: 1.55;
-    margin: 0;
-    flex: 1;
-    display: -webkit-box;
-    -webkit-line-clamp: 4;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
-  .featured-card-links {
-    display: flex;
-    gap: 8px;
-    padding-top: 8px;
-    border-top: 1px solid #f0f0f0;
-    margin-top: auto;
-  }
-
-  .featured-link-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 12px;
-    border-radius: 6px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    text-decoration: none;
-    transition: background 0.15s, color 0.15s;
-  }
-
-  .featured-link-btn.github {
-    background: #24292e;
-    color: #fff;
-  }
-  .featured-link-btn.github:hover { background: #3a3f44; }
-
-  .featured-link-btn.site {
-    background: #f4f4f4;
-    color: #333;
-    border: 1px solid #ddd;
-  }
-  .featured-link-btn.site:hover {
-    background: var(--primary-color, #860083);
-    color: #fff;
-    border-color: transparent;
-  }
-
-  .featured-link-btn.disabled {
-    opacity: 0.3;
-    pointer-events: none;
-  }
-
-  @media (max-width: 600px) {
-    .featured-card {
-      flex: 0 0 280px;
-    }
-    .featured-header h2 {
-      font-size: 1.35rem;
-    }
-  }
-</style>
 {% endblock %}
 
 {% block content %}
 <canvas id="particle-canvas"></canvas>
+
+{% if featuredProjects and featuredProjects.length %}
+{% macro featuredItems(duplicate) %}
+<div class="featured-ticker-group"{% if duplicate %} aria-hidden="true"{% endif %}>
+  {% for project in featuredProjects %}
+  <a class="featured-ticker-project"
+    href="{% if project.published_url %}{{ project.published_url }}{% elif project.github_url %}{{ project.github_url }}{% else %}{{ SITEURL }}/projetos#projeto-{{ project.id }}{% endif %}"
+    {% if project.published_url or project.github_url %}target="_blank" rel="noopener noreferrer"{% endif %}
+    {% if duplicate %}tabindex="-1"{% endif %}>
+    <span class="featured-ticker-project-title">{{ project.title }}</span>
+    <span aria-hidden="true">↗</span>
+  </a>
+  {% endfor %}
+</div>
+{% endmacro %}
+<div class="featured-ticker" aria-label="Projetos em destaque">
+  <div class="featured-ticker-label">
+    <span aria-hidden="true">✦</span>
+    <span class="featured-ticker-label-full">Projetos em destaque</span>
+    <span class="featured-ticker-label-short" aria-hidden="true">Destaques</span>
+  </div>
+  <div class="featured-ticker-viewport">
+    <div class="featured-ticker-track">
+      {{ featuredItems(false) }}
+      {{ featuredItems(true) }}
+    </div>
+  </div>
+  <button class="featured-ticker-toggle" type="button" hidden aria-label="Pausar animação dos projetos">
+    <i class="fas fa-pause" aria-hidden="true"></i>
+  </button>
+  <a class="featured-ticker-all" href="{{ SITEURL }}/projetos" aria-label="Ver todos os projetos">
+    <span class="featured-ticker-all-text">Ver todos</span> <span aria-hidden="true">→</span>
+  </a>
+</div>
+{% endif %}
 
 {# ── HERO ── #}
 <section class="hero">
@@ -256,63 +63,6 @@
     </button>
   </div>
 </section>
-
-{# ── PROJETOS EM DESTAQUE (minimalista, apenas se houver projetos marcados) ── #}
-{% if featuredProjects and featuredProjects.length %}
-<section class="featured-carousel-section" aria-labelledby="featured-projects-title">
-  <div class="container">
-    <div class="featured-header">
-      <div class="featured-title-wrap">
-        <span class="featured-badge">⭐ Destaques</span>
-        <h2 id="featured-projects-title">Projetos em Destaque</h2>
-      </div>
-      <div class="featured-controls">
-        <a href="{{ SITEURL }}/projetos" class="featured-all-link">Ver todos os projetos →</a>
-        <button type="button" class="carousel-nav-btn" id="carouselPrevBtn" aria-label="Projeto anterior">
-          <i class="fas fa-chevron-left"></i>
-        </button>
-        <button type="button" class="carousel-nav-btn" id="carouselNextBtn" aria-label="Próximo projeto">
-          <i class="fas fa-chevron-right"></i>
-        </button>
-      </div>
-    </div>
-
-    <div class="featured-carousel-wrapper">
-      <div class="featured-carousel-track" id="featuredCarouselTrack">
-        {% for project in featuredProjects %}
-        <article class="featured-card">
-          <div class="featured-card-top">
-            <h3 class="featured-card-title">{{ project.title }}</h3>
-            <span class="status-badge status-{{ project.statusClass }}">{{ project.situacao }}</span>
-          </div>
-
-          {% if project.short_description %}
-          <p class="featured-card-desc">{{ project.short_description }}</p>
-          {% else %}
-          <p class="featured-card-desc" style="color:#aaa;font-style:italic;">Sem descrição informada.</p>
-          {% endif %}
-
-          <div class="featured-card-links">
-            <a class="featured-link-btn github {% if not project.github_url %}disabled{% endif %}"
-               href="{{ project.github_url or '#' }}"
-               target="_blank" rel="noopener noreferrer"
-               title="{% if project.github_url %}Ver no GitHub{% else %}GitHub não informado{% endif %}">
-              <i class="fab fa-github"></i> GitHub
-            </a>
-            <a class="featured-link-btn site {% if not project.published_url %}disabled{% endif %}"
-               href="{{ project.published_url or '#' }}"
-               target="_blank" rel="noopener noreferrer"
-               title="{% if project.published_url %}Abrir site{% else %}Site não publicado{% endif %}">
-              <i class="fas fa-globe"></i> Site
-            </a>
-          </div>
-        </article>
-        {% endfor %}
-      </div>
-    </div>
-  </div>
-</section>
-{% endif %}
 
 {# ── DIFERENCIAIS ── #}
 <section class="features">
@@ -373,38 +123,5 @@
 </section>
 
 <script src="{{ SITEURL }}/assets/js/index.js"></script>
-<script>
-  (function () {
-    const track = document.getElementById('featuredCarouselTrack');
-    const prevBtn = document.getElementById('carouselPrevBtn');
-    const nextBtn = document.getElementById('carouselNextBtn');
-
-    if (!track || !prevBtn || !nextBtn) return;
-
-    function updateButtons() {
-      const maxScroll = track.scrollWidth - track.clientWidth - 4;
-      prevBtn.disabled = track.scrollLeft <= 4;
-      nextBtn.disabled = track.scrollLeft >= maxScroll;
-    }
-
-    function getScrollStep() {
-      const card = track.querySelector('.featured-card');
-      return card ? card.offsetWidth + 20 : 340;
-    }
-
-    prevBtn.addEventListener('click', function () {
-      track.scrollBy({ left: -getScrollStep(), behavior: 'smooth' });
-    });
-
-    nextBtn.addEventListener('click', function () {
-      track.scrollBy({ left: getScrollStep(), behavior: 'smooth' });
-    });
-
-    track.addEventListener('scroll', updateButtons, { passive: true });
-    window.addEventListener('resize', updateButtons);
-    updateButtons();
-  })();
-</script>
-
 {% if page %} {{ page.content | safe }} {% endif %}
 {% endblock %}

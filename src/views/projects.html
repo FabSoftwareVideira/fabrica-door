@@ -230,7 +230,7 @@
 
     <div class="projects-grid-public" id="projectsGrid">
         {% for project in projects %}
-        <article class="project-card-pub"
+        <article class="project-card-pub" id="projeto-{{ project.id }}"
             data-title="{{ project.title | lower }}"
             data-desc="{{ project.short_description | lower }}"
             data-status="{{ project.situacao }}"

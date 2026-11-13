@@ -1,3 +1,45 @@
+const ticker = document.querySelector('.featured-ticker');
+if (ticker) {
+    const viewport = ticker.querySelector('.featured-ticker-viewport');
+    const group = ticker.querySelector('.featured-ticker-group');
+    const toggle = ticker.querySelector('.featured-ticker-toggle');
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    function updateTickerDimensions() {
+        ticker.style.setProperty('--ticker-viewport-width', `${viewport.clientWidth}px`);
+        ticker.style.setProperty('--ticker-duration', `${group.offsetWidth / 45}s`);
+    }
+
+    function updateTickerMotion() {
+        toggle.hidden = reducedMotion.matches;
+        updateTickerDimensions();
+    }
+
+    toggle.addEventListener('click', () => {
+        const paused = ticker.classList.toggle('is-paused');
+        toggle.setAttribute('aria-label', paused
+            ? 'Retomar animação dos projetos'
+            : 'Pausar animação dos projetos');
+        toggle.querySelector('i').className = paused ? 'fas fa-play' : 'fas fa-pause';
+    });
+
+    window.addEventListener('resize', updateTickerDimensions);
+    reducedMotion.addEventListener('change', updateTickerMotion);
+    ticker.addEventListener('focusin', (event) => {
+        if (event.target.matches(':focus-visible')) {
+            ticker.classList.add('is-keyboard');
+            event.target.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+        }
+    });
+    ticker.addEventListener('focusout', (event) => {
+        if (!ticker.contains(event.relatedTarget)) {
+            ticker.classList.remove('is-keyboard');
+            viewport.scrollLeft = 0;
+        }
+    });
+    updateTickerMotion();
+}
+
 const canvas = document.getElementById('particle-canvas');
 const ctx = canvas.getContext('2d');
 
