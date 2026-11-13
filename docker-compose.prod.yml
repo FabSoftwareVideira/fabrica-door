@@ -19,7 +19,7 @@ services:
     environment:
       # Overrides fixos de produção — não alterar
       NODE_ENV: production
-      PGHOST: db
+      PGHOST: fabrica-door-db
 
       # Valores configuráveis via .env (ou aba Environment do Dokploy)
       PORT: ${PORT:-8000}
@@ -52,7 +52,7 @@ services:
       - dokploy-network
 
     depends_on:
-      db:
+      fabrica-door-db:
         condition: service_healthy
 
     healthcheck:
