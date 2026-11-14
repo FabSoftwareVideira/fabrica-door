@@ -6,9 +6,7 @@
 <link rel="stylesheet" href="{{ SITEURL }}/assets/css/index.css">
 {% endblock %}
 
-{% block content %}
-<canvas id="particle-canvas"></canvas>
-
+{% block before_header %}
 {% if featuredProjects and featuredProjects.length %}
 {% macro featuredItems(duplicate) %}
 <div class="featured-ticker-group"{% if duplicate %} aria-hidden="true"{% endif %}>
@@ -43,6 +41,10 @@
   </a>
 </div>
 {% endif %}
+{% endblock %}
+
+{% block content %}
+<canvas id="particle-canvas"></canvas>
 
 {# ── HERO ── #}
 <section class="hero">

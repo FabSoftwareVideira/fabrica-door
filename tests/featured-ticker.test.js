@@ -21,6 +21,21 @@ test("a faixa só aparece quando há projetos em destaque", () => {
     assert.match(render([{ id: 1, title: "Projeto", situacao: "Concluído" }]), /class="featured-ticker"/);
 });
 
+test("a faixa fica antes da navegação somente na página inicial", () => {
+    const projects = [{ id: 1, title: "Projeto" }];
+    const home = render(projects);
+    assert.ok(home.indexOf('class="featured-ticker"') < home.indexOf('<header id="header">'));
+
+    const otherPage = templates.render("projects.html", {
+        SITEURL: "",
+        SITENAME: "Fábrica",
+        page: { title: "Projetos" },
+        featuredProjects: projects,
+        projects: []
+    });
+    assert.doesNotMatch(otherPage, /class="featured-ticker"/);
+});
+
 test("a faixa abre o site, o GitHub ou o cartão do projeto, nessa ordem", () => {
     const html = render([
         { id: 1, title: "Site", situacao: "Concluído", published_url: "https://example.com", github_url: "https://github.com/example" },
