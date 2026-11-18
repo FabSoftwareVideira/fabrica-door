@@ -46,7 +46,7 @@ test("a faixa abre o site, o GitHub ou o cartão do projeto, nessa ordem", () =>
     assert.match(html, /href="https:\/\/example\.com"\s+target="_blank" rel="noopener noreferrer"/);
     assert.match(html, /href="https:\/\/github\.com\/example"\s+target="_blank" rel="noopener noreferrer"/);
     assert.match(html, /href="\/projetos#projeto-3"/);
-    assert.match(html, /class="featured-ticker-group" aria-hidden="true"/);
+    assert.match(html, /class="featured-ticker-group"\s+aria-hidden="true"/);
     assert.equal((html.match(/tabindex="-1"/g) || []).length, 3);
     assert.doesNotMatch(html, /Concluído|Em Andamento|Em Planejamento/);
 

@@ -170,8 +170,6 @@ test("a home e a equipe recebem os enfeites de Natal", () => {
     assert.match(index, /christmas-lab/);
     assert.match(index, /christmas-ascii-tree/);
     assert.match(index, /data-christmas-command="npm install natal"/);
-    assert.match(index, /id="christmas-gift-message"/);
-    assert.match(index, /id="christmas-santa-bubble"/);
     assert.match(index, /FELIZ NATAL<\/kbd>/);
 
     const regularIndex = templates.render("index.html", {

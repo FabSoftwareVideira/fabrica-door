@@ -124,6 +124,244 @@
     syncState();
   });
 
+  /* ---------- Música de Natal (Web Audio, só por clique) ---------- */
+  const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+
+  if (AudioContextClass) {
+    const SEMITONES = {
+      C: 0,
+      "C#": 1,
+      D: 2,
+      "D#": 3,
+      E: 4,
+      F: 5,
+      "F#": 6,
+      G: 7,
+      "G#": 8,
+      A: 9,
+      "A#": 10,
+      B: 11
+    };
+    const BEAT_SECONDS = 0.52;
+    const LOOKAHEAD_MS = 250;
+    const SCHEDULE_AHEAD = 0.9;
+    const VOLUME = 0.16;
+
+    // Refrão de "Jingle Bells": [nota, duração em tempos].
+    const MELODY = [
+      ["E5", 1], ["E5", 1], ["E5", 2],
+      ["E5", 1], ["E5", 1], ["E5", 2],
+      ["E5", 1], ["G5", 1], ["C5", 1.5], ["D5", 0.5],
+      ["E5", 4],
+      ["F5", 1], ["F5", 1], ["F5", 1.5], ["F5", 0.5],
+      ["F5", 1], ["E5", 1], ["E5", 1], ["E5", 0.5], ["E5", 0.5],
+      ["E5", 1], ["D5", 1], ["D5", 1], ["E5", 1],
+      ["D5", 2], ["G5", 2],
+      ["E5", 1], ["E5", 1], ["E5", 2],
+      ["E5", 1], ["E5", 1], ["E5", 2],
+      ["E5", 1], ["G5", 1], ["C5", 1.5], ["D5", 0.5],
+      ["E5", 4],
+      ["F5", 1], ["F5", 1], ["F5", 1.5], ["F5", 0.5],
+      ["F5", 1], ["E5", 1], ["E5", 1], ["E5", 0.5], ["E5", 0.5],
+      ["G5", 1], ["G5", 1], ["F5", 1], ["D5", 1],
+      ["C5", 4]
+    ];
+
+    const musicToggle = document.createElement("button");
+    musicToggle.type = "button";
+    musicToggle.className = "christmas-music-toggle";
+    musicToggle.setAttribute("aria-pressed", "false");
+    musicToggle.setAttribute("aria-label", "Ativar a música de Natal");
+    musicToggle.title = "Tocar música de Natal";
+    musicToggle.innerHTML =
+      '<span class="christmas-music-toggle-icon" aria-hidden="true">🎵</span>';
+    document.body.appendChild(musicToggle);
+
+    let audioContext = null;
+    let masterGain = null;
+    let schedulerTimer = null;
+    let nextNoteTime = 0;
+    let noteIndex = 0;
+    let musicPlaying = false;
+
+    function noteFrequency(note) {
+      const match = /^([A-G]#?)(\d)$/.exec(note);
+
+      if (!match) return 440;
+
+      const semitone =
+        SEMITONES[match[1]] + (Number(match[2]) + 1) * 12;
+
+      return 440 * Math.pow(2, (semitone - 69) / 12);
+    }
+
+    function ensureAudioContext() {
+      if (!audioContext) {
+        audioContext = new AudioContextClass();
+        masterGain = audioContext.createGain();
+        masterGain.gain.value = 0;
+        masterGain.connect(audioContext.destination);
+      }
+
+      if (audioContext.state === "suspended") {
+        audioContext.resume().catch(() => {});
+      }
+
+      return audioContext;
+    }
+
+    function playNote(note, startAt, beats) {
+      const frequency = noteFrequency(note);
+      const duration = beats * BEAT_SECONDS;
+      const release = Math.min(1.7, Math.max(0.3, duration * 0.92));
+      const partials = [
+        { type: "triangle", ratio: 1, gain: 0.5 },
+        { type: "sine", ratio: 2.01, gain: 0.16 },
+        { type: "sine", ratio: 3.02, gain: 0.06 }
+      ];
+
+      partials.forEach((partial) => {
+        const oscillator = audioContext.createOscillator();
+        const envelope = audioContext.createGain();
+
+        oscillator.type = partial.type;
+        oscillator.frequency.value = frequency * partial.ratio;
+
+        envelope.gain.setValueAtTime(0.0001, startAt);
+        envelope.gain.exponentialRampToValueAtTime(
+          partial.gain,
+          startAt + 0.014
+        );
+        envelope.gain.exponentialRampToValueAtTime(0.0001, startAt + release);
+
+        oscillator.connect(envelope);
+        envelope.connect(masterGain);
+        oscillator.start(startAt);
+        oscillator.stop(startAt + release + 0.05);
+      });
+    }
+
+    function scheduleMusic() {
+      if (!musicPlaying || !audioContext) return;
+
+      // Se a aba ficou parada, evita agendar uma rajada de notas atrasadas.
+      if (nextNoteTime < audioContext.currentTime - 0.5) {
+        nextNoteTime = audioContext.currentTime + 0.05;
+      }
+
+      while (nextNoteTime < audioContext.currentTime + SCHEDULE_AHEAD) {
+        const [note, beats] = MELODY[noteIndex];
+
+        playNote(note, nextNoteTime, beats);
+
+        nextNoteTime += beats * BEAT_SECONDS;
+        noteIndex += 1;
+
+        if (noteIndex >= MELODY.length) {
+          noteIndex = 0;
+          nextNoteTime += 1.2; // respiro antes de repetir o refrão
+        }
+      }
+    }
+
+    function syncMusicButton() {
+      musicToggle.setAttribute("aria-pressed", String(musicPlaying));
+      musicToggle.setAttribute(
+        "aria-label",
+        musicPlaying
+          ? "Desativar a música de Natal"
+          : "Ativar a música de Natal"
+      );
+      musicToggle.title = musicPlaying
+        ? "Desativar a música"
+        : "Tocar música de Natal";
+      musicToggle.classList.toggle("is-playing", musicPlaying);
+      musicToggle.querySelector(".christmas-music-toggle-icon").textContent =
+        musicPlaying ? "🔊" : "🎵";
+    }
+
+    function startMusic() {
+      ensureAudioContext();
+
+      const now = audioContext.currentTime;
+
+      musicPlaying = true;
+      noteIndex = 0;
+      nextNoteTime = now + 0.18;
+
+      masterGain.gain.cancelScheduledValues(now);
+      masterGain.gain.setValueAtTime(
+        Math.max(masterGain.gain.value, 0.0001),
+        now
+      );
+      masterGain.gain.linearRampToValueAtTime(VOLUME, now + 0.6);
+
+      scheduleMusic();
+
+      window.clearInterval(schedulerTimer);
+      schedulerTimer = window.setInterval(scheduleMusic, LOOKAHEAD_MS);
+
+      syncMusicButton();
+    }
+
+    function stopMusic() {
+      musicPlaying = false;
+      window.clearInterval(schedulerTimer);
+      schedulerTimer = null;
+
+      if (audioContext && masterGain) {
+        const now = audioContext.currentTime;
+
+        masterGain.gain.cancelScheduledValues(now);
+        masterGain.gain.setValueAtTime(
+          Math.max(masterGain.gain.value, 0.0001),
+          now
+        );
+        masterGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.3);
+      }
+
+      syncMusicButton();
+    }
+
+    musicToggle.addEventListener("click", () => {
+      if (musicPlaying) {
+        stopMusic();
+        return;
+      }
+
+      startMusic();
+    });
+
+    // Não deixa a trilha tocando com a aba em segundo plano.
+    document.addEventListener("visibilitychange", () => {
+      if (!audioContext) return;
+
+      if (document.hidden) {
+        window.clearInterval(schedulerTimer);
+        schedulerTimer = null;
+
+        if (musicPlaying) {
+          audioContext.suspend().catch(() => {});
+        }
+
+        return;
+      }
+
+      if (!musicPlaying) return;
+
+      audioContext
+        .resume()
+        .then(() => {
+          window.clearInterval(schedulerTimer);
+          noteIndex = 0;
+          nextNoteTime = audioContext.currentTime + 0.2;
+          scheduleMusic();
+          schedulerTimer = window.setInterval(scheduleMusic, LOOKAHEAD_MS);
+        })
+        .catch(() => {});
+    });
+  }
+
   reducedMotion.addEventListener("change", () => {
     syncState();
     handleReducedMotionChange();
