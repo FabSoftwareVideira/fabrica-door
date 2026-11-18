@@ -180,12 +180,13 @@ desativados nesse modo).
 
 ### Música de Natal
 
-Ao lado do botão da neve há um botão com 🎵 que toca um trecho de "Jingle Bells"
-sintetizado na hora com a Web Audio API — nenhum arquivo de áudio é baixado e
-nada toca automaticamente: o som só começa depois do clique. O botão vira 🔊
-enquanto a música está no ar, a trilha faz um fade suave ao desligar e pausa
-quando a aba fica em segundo plano. A preferência não é salva, então cada
-página carrega em silêncio.
+Ao lado do botão da neve há um botão com 🎵 que toca uma versão animada de
+"Jingle Bells" sintetizada na hora com a Web Audio API — melodia, baixo
+saltitante, bumbo, caixa, chocalho e guizos de trenó, a ~150 BPM. Nenhum arquivo
+de áudio é baixado e nada toca automaticamente: o som só começa depois do
+clique. O botão vira 🔊 enquanto a música está no ar, a trilha faz um fade suave
+ao desligar e pausa quando a aba fica em segundo plano. A preferência não é
+salva, então cada página carrega em silêncio.
 
 Quando a janela está ativa, o servidor adiciona `data-season="christmas"` ao
 `<html>`, carrega `assets/css/christmas.css` e `assets/js/christmas.js` e

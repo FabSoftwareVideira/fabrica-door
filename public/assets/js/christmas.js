@@ -142,13 +142,17 @@
       "A#": 10,
       B: 11
     };
-    const BEAT_SECONDS = 0.52;
-    const LOOKAHEAD_MS = 250;
-    const SCHEDULE_AHEAD = 0.9;
-    const VOLUME = 0.16;
+    const BEAT_SECONDS = 0.4; // ~150 BPM, bem mais animado
+    const STEPS_PER_BEAT = 2;
+    const SWING = 0.05; // leve balanço nos contratempos
+    const LOOKAHEAD_MS = 200;
+    const SCHEDULE_AHEAD = 0.6;
+    const VOLUME = 0.5;
+    const STEP_SECONDS = BEAT_SECONDS / STEPS_PER_BEAT;
+    const TOTAL_STEPS = 96;
 
-    // Refrão de "Jingle Bells": [nota, duração em tempos].
-    const MELODY = [
+    // Refrão de "Jingle Bells" em 12 compassos: [nota, duração em tempos].
+    const TUNE = [
       ["E5", 1], ["E5", 1], ["E5", 2],
       ["E5", 1], ["E5", 1], ["E5", 2],
       ["E5", 1], ["G5", 1], ["C5", 1.5], ["D5", 0.5],
@@ -157,15 +161,26 @@
       ["F5", 1], ["E5", 1], ["E5", 1], ["E5", 0.5], ["E5", 0.5],
       ["E5", 1], ["D5", 1], ["D5", 1], ["E5", 1],
       ["D5", 2], ["G5", 2],
-      ["E5", 1], ["E5", 1], ["E5", 2],
-      ["E5", 1], ["E5", 1], ["E5", 2],
-      ["E5", 1], ["G5", 1], ["C5", 1.5], ["D5", 0.5],
-      ["E5", 4],
       ["F5", 1], ["F5", 1], ["F5", 1.5], ["F5", 0.5],
       ["F5", 1], ["E5", 1], ["E5", 1], ["E5", 0.5], ["E5", 0.5],
       ["G5", 1], ["G5", 1], ["F5", 1], ["D5", 1],
       ["C5", 4]
     ];
+
+    // Harmonia por compasso, para o baixo saltitante.
+    const BAR_ROOTS = [
+      "C3", "C3", "C3", "C3",
+      "F3", "C3", "G3", "G3",
+      "F3", "C3", "G3", "C3"
+    ];
+
+    const melodyByStep = new Map();
+    let tuneCursor = 0;
+
+    TUNE.forEach(([note, beats]) => {
+      melodyByStep.set(tuneCursor, { note, beats });
+      tuneCursor += Math.round(beats * STEPS_PER_BEAT);
+    });
 
     const musicToggle = document.createElement("button");
     musicToggle.type = "button";
@@ -179,9 +194,11 @@
 
     let audioContext = null;
     let masterGain = null;
+    let noiseBuffer = null;
     let schedulerTimer = null;
-    let nextNoteTime = 0;
-    let noteIndex = 0;
+    let loopStartTime = 0;
+    let currentStep = 0;
+    let nextStepTime = 0;
     let musicPlaying = false;
 
     function noteFrequency(note) {
@@ -198,9 +215,19 @@
     function ensureAudioContext() {
       if (!audioContext) {
         audioContext = new AudioContextClass();
+
         masterGain = audioContext.createGain();
         masterGain.gain.value = 0;
-        masterGain.connect(audioContext.destination);
+
+        const compressor = audioContext.createDynamicsCompressor();
+        compressor.threshold.value = -16;
+        compressor.knee.value = 20;
+        compressor.ratio.value = 6;
+        compressor.attack.value = 0.004;
+        compressor.release.value = 0.2;
+
+        masterGain.connect(compressor);
+        compressor.connect(audioContext.destination);
       }
 
       if (audioContext.state === "suspended") {
@@ -210,57 +237,206 @@
       return audioContext;
     }
 
-    function playNote(note, startAt, beats) {
+    function getNoiseBuffer() {
+      if (noiseBuffer) return noiseBuffer;
+
+      const length = Math.floor(audioContext.sampleRate * 0.5);
+      noiseBuffer = audioContext.createBuffer(
+        1,
+        length,
+        audioContext.sampleRate
+      );
+
+      const data = noiseBuffer.getChannelData(0);
+
+      for (let index = 0; index < length; index += 1) {
+        data[index] = Math.random() * 2 - 1;
+      }
+
+      return noiseBuffer;
+    }
+
+    function playTone(
+      type,
+      frequency,
+      startAt,
+      duration,
+      level,
+      filterFrequency,
+      detune
+    ) {
+      const oscillator = audioContext.createOscillator();
+      const filter = audioContext.createBiquadFilter();
+      const envelope = audioContext.createGain();
+
+      oscillator.type = type;
+      oscillator.frequency.value = frequency;
+
+      if (detune) oscillator.detune.value = detune;
+
+      filter.type = "lowpass";
+      filter.frequency.value = filterFrequency;
+      filter.Q.value = 0.7;
+
+      envelope.gain.setValueAtTime(0.0001, startAt);
+      envelope.gain.exponentialRampToValueAtTime(level, startAt + 0.008);
+      envelope.gain.exponentialRampToValueAtTime(0.0001, startAt + duration);
+
+      oscillator.connect(filter);
+      filter.connect(envelope);
+      envelope.connect(masterGain);
+      oscillator.start(startAt);
+      oscillator.stop(startAt + duration + 0.05);
+    }
+
+    function playLead(note, startAt, beats) {
       const frequency = noteFrequency(note);
-      const duration = beats * BEAT_SECONDS;
-      const release = Math.min(1.7, Math.max(0.3, duration * 0.92));
-      const partials = [
-        { type: "triangle", ratio: 1, gain: 0.5 },
-        { type: "sine", ratio: 2.01, gain: 0.16 },
-        { type: "sine", ratio: 3.02, gain: 0.06 }
-      ];
+      const duration = Math.min(beats * BEAT_SECONDS * 0.94 + 0.06, 1.7);
 
-      partials.forEach((partial) => {
-        const oscillator = audioContext.createOscillator();
-        const envelope = audioContext.createGain();
+      // Brilho metálico + corpo, bem mais "pra frente" que o sininho antigo.
+      playTone("square", frequency, startAt, duration, 0.19, 3400, 4);
+      playTone("triangle", frequency, startAt, duration, 0.12, 2800, -4);
+    }
 
-        oscillator.type = partial.type;
-        oscillator.frequency.value = frequency * partial.ratio;
+    function playBass(frequency, level, startAt) {
+      playTone("triangle", frequency, startAt, 0.22, level, 720, 0);
+      playTone("sine", frequency / 2, startAt, 0.2, level * 0.35, 420, 0);
+    }
 
-        envelope.gain.setValueAtTime(0.0001, startAt);
-        envelope.gain.exponentialRampToValueAtTime(
-          partial.gain,
-          startAt + 0.014
-        );
-        envelope.gain.exponentialRampToValueAtTime(0.0001, startAt + release);
+    function playNoise(startAt, options) {
+      const source = audioContext.createBufferSource();
+      const filter = audioContext.createBiquadFilter();
+      const envelope = audioContext.createGain();
 
-        oscillator.connect(envelope);
-        envelope.connect(masterGain);
-        oscillator.start(startAt);
-        oscillator.stop(startAt + release + 0.05);
+      source.buffer = getNoiseBuffer();
+      filter.type = options.type;
+      filter.frequency.value = options.frequency;
+      filter.Q.value = options.q ?? 1;
+
+      envelope.gain.setValueAtTime(options.level, startAt);
+      envelope.gain.exponentialRampToValueAtTime(
+        0.0001,
+        startAt + options.duration
+      );
+
+      source.connect(filter);
+      filter.connect(envelope);
+      envelope.connect(masterGain);
+      source.start(startAt);
+      source.stop(startAt + options.duration + 0.02);
+    }
+
+    function playKick(startAt, level) {
+      const oscillator = audioContext.createOscillator();
+      const envelope = audioContext.createGain();
+
+      oscillator.type = "sine";
+      oscillator.frequency.setValueAtTime(150, startAt);
+      oscillator.frequency.exponentialRampToValueAtTime(48, startAt + 0.12);
+
+      envelope.gain.setValueAtTime(0.85 * level, startAt);
+      envelope.gain.exponentialRampToValueAtTime(0.0001, startAt + 0.22);
+
+      oscillator.connect(envelope);
+      envelope.connect(masterGain);
+      oscillator.start(startAt);
+      oscillator.stop(startAt + 0.24);
+    }
+
+    function playSnare(startAt) {
+      playNoise(startAt, {
+        type: "bandpass",
+        frequency: 1900,
+        q: 0.9,
+        level: 0.5,
+        duration: 0.16
       });
+    }
+
+    function playShaker(startAt, level) {
+      playNoise(startAt, {
+        type: "highpass",
+        frequency: 7000,
+        q: 0.7,
+        level,
+        duration: 0.05
+      });
+    }
+
+    function playSleigh(startAt) {
+      playNoise(startAt, {
+        type: "bandpass",
+        frequency: 5200,
+        q: 2.4,
+        level: 0.07,
+        duration: 0.13
+      });
+    }
+
+    function playCrash(startAt) {
+      playNoise(startAt, {
+        type: "highpass",
+        frequency: 3800,
+        q: 0.5,
+        level: 0.18,
+        duration: 0.6
+      });
+    }
+
+    function stepOffset(step) {
+      return (
+        step * STEP_SECONDS + (step % 2 === 1 ? SWING * BEAT_SECONDS : 0)
+      );
+    }
+
+    function scheduleStep(step, startAt) {
+      const bar = Math.floor(step / 8);
+      const position = step % 8;
+      const melody = melodyByStep.get(step);
+      const root = noteFrequency(BAR_ROOTS[bar]);
+
+      if (melody) {
+        playLead(melody.note, startAt, melody.beats);
+      }
+
+      // Baixo saltitante: fundamental nos tempos, oitava nos contratempos.
+      playBass(
+        position % 2 === 0 ? root : root * 2,
+        position % 2 === 0 ? 0.34 : 0.22,
+        startAt
+      );
+
+      if (position === 0 || position === 4) playKick(startAt, 1);
+      if (position === 7) playKick(startAt, 0.5);
+      if (position === 2 || position === 6) playSnare(startAt);
+      if (step === 0) playCrash(startAt);
+
+      playShaker(startAt, position % 2 === 0 ? 0.08 : 0.045);
+      if (position % 2 === 0) playSleigh(startAt);
     }
 
     function scheduleMusic() {
       if (!musicPlaying || !audioContext) return;
 
-      // Se a aba ficou parada, evita agendar uma rajada de notas atrasadas.
-      if (nextNoteTime < audioContext.currentTime - 0.5) {
-        nextNoteTime = audioContext.currentTime + 0.05;
+      const now = audioContext.currentTime;
+
+      // Se a aba ficou parada, reancora a grade em vez de despejar notas atrasadas.
+      if (nextStepTime < now - 0.4) {
+        loopStartTime = now + 0.05 - stepOffset(currentStep);
+        nextStepTime = now + 0.05;
       }
 
-      while (nextNoteTime < audioContext.currentTime + SCHEDULE_AHEAD) {
-        const [note, beats] = MELODY[noteIndex];
+      while (nextStepTime < now + SCHEDULE_AHEAD) {
+        scheduleStep(currentStep, nextStepTime);
 
-        playNote(note, nextNoteTime, beats);
+        currentStep += 1;
 
-        nextNoteTime += beats * BEAT_SECONDS;
-        noteIndex += 1;
-
-        if (noteIndex >= MELODY.length) {
-          noteIndex = 0;
-          nextNoteTime += 1.2; // respiro antes de repetir o refrão
+        if (currentStep >= TOTAL_STEPS) {
+          currentStep = 0;
+          loopStartTime += TOTAL_STEPS * STEP_SECONDS;
         }
+
+        nextStepTime = loopStartTime + stepOffset(currentStep);
       }
     }
 
@@ -286,8 +462,9 @@
       const now = audioContext.currentTime;
 
       musicPlaying = true;
-      noteIndex = 0;
-      nextNoteTime = now + 0.18;
+      currentStep = 0;
+      loopStartTime = now + 0.22;
+      nextStepTime = loopStartTime;
 
       masterGain.gain.cancelScheduledValues(now);
       masterGain.gain.setValueAtTime(
@@ -353,8 +530,9 @@
         .resume()
         .then(() => {
           window.clearInterval(schedulerTimer);
-          noteIndex = 0;
-          nextNoteTime = audioContext.currentTime + 0.2;
+          currentStep = 0;
+          loopStartTime = audioContext.currentTime + 0.2;
+          nextStepTime = loopStartTime;
           scheduleMusic();
           schedulerTimer = window.setInterval(scheduleMusic, LOOKAHEAD_MS);
         })
