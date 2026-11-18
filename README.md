@@ -69,9 +69,11 @@ src/
 
 1. Copie `.env.sample` para `.env` e preencha as variáveis `PG*`, `JWT_SECRET` e `JWT_EXPIRES_IN`.
 2. Suba o banco com Docker:
+
    ```bash
    docker compose up db -d
    ```
+
    A migration `src/db/migrations/001_initial.sql` roda automaticamente no primeiro start.
 
 3. Gere o hash da senha do administrador:
@@ -87,17 +89,17 @@ src/
 
 ## Rotas de administração
 
-| Rota | Descrição |
-|---|---|
-| `GET /auth/login` | Tela de login |
-| `POST /auth/login` | Autenticar (gera cookie JWT) |
-| `POST /auth/logout` | Encerrar sessão |
-| `GET /admin/projetos` | Listar projetos *(protegida)* |
-| `GET /admin/projetos/novo` | Formulário de novo projeto *(protegida)* |
-| `POST /admin/projetos` | Criar projeto *(protegida)* |
-| `GET /admin/projetos/:id/editar` | Formulário de edição *(protegida)* |
-| `POST /admin/projetos/:id` | Salvar edição *(protegida)* |
-| `POST /admin/projetos/:id/excluir` | Excluir projeto *(protegida)* |
+| Rota                               | Descrição                                |
+| ---------------------------------- | ---------------------------------------- |
+| `GET /auth/login`                  | Tela de login                            |
+| `POST /auth/login`                 | Autenticar (gera cookie JWT)             |
+| `POST /auth/logout`                | Encerrar sessão                          |
+| `GET /admin/projetos`              | Listar projetos _(protegida)_            |
+| `GET /admin/projetos/novo`         | Formulário de novo projeto _(protegida)_ |
+| `POST /admin/projetos`             | Criar projeto _(protegida)_              |
+| `GET /admin/projetos/:id/editar`   | Formulário de edição _(protegida)_       |
+| `POST /admin/projetos/:id`         | Salvar edição _(protegida)_              |
+| `POST /admin/projetos/:id/excluir` | Excluir projeto _(protegida)_            |
 
 ## Execução local sem Docker
 
@@ -136,12 +138,12 @@ ao final da janela.
 As datas ficam no `.env` e **não têm ano**, então a mesma configuração vale
 para todos os anos:
 
-| Variável | Padrão | Descrição |
-|---|---|---|
-| `CHRISTMAS_THEME` | `auto` | `auto` ativa pela janela; `on` força a ativação (útil para testar); `off` desativa |
-| `CHRISTMAS_START` | `12-01` | Primeiro dia ativo, no formato `MM-DD` |
-| `CHRISTMAS_END` | `12-30` | Último dia ativo (inclusive), no formato `MM-DD` |
-| `CHRISTMAS_TIMEZONE` | `America/Sao_Paulo` | Fuso usado para decidir a data atual |
+| Variável             | Padrão              | Descrição                                                                          |
+| -------------------- | ------------------- | ---------------------------------------------------------------------------------- |
+| `CHRISTMAS_THEME`    | `auto`              | `auto` ativa pela janela; `on` força a ativação (útil para testar); `off` desativa |
+| `CHRISTMAS_START`    | `12-01`             | Primeiro dia ativo, no formato `MM-DD`                                             |
+| `CHRISTMAS_END`      | `12-30`             | Último dia ativo (inclusive), no formato `MM-DD`                                   |
+| `CHRISTMAS_TIMEZONE` | `America/Sao_Paulo` | Fuso usado para decidir a data atual                                               |
 
 A janela também pode atravessar a virada do ano, por exemplo
 `CHRISTMAS_START=12-20` e `CHRISTMAS_END=01-06`.
@@ -166,8 +168,6 @@ Na página inicial, quando o tema está ativo:
   comando `npm install natal`.
 - **Árvore de código** — uma árvore de Natal desenhada com `{}`, `</>`, `;`,
   `0`, `1`, `#` e outros caracteres de programação.
-- **Presente surpresa** — um presente que abre e revela uma mensagem da equipe.
-- **Visita ilustre** — clique no Papai Noel para receber um "Ho ho ho!".
 - **Trenó** — de tempos em tempos, um trenó com renas atravessa o topo da
   página.
 - **Easter egg** — digite `FELIZ NATAL` em qualquer página para uma surpresa.
