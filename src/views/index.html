@@ -50,11 +50,24 @@
 <section class="hero">
   <div class="hero-overlay">
     <div class="hero-content">
+      {% if isChristmas %}
+      <p class="christmas-eyebrow">
+        <span aria-hidden="true">🎄</span>
+        Feliz Natal da Fábrica de Software
+        <span aria-hidden="true">🎄</span>
+      </p>
+      {% endif %}
       <h1>Transformamos ideias em soluções.</h1>
       <p>
         A Fábrica de Software é uma iniciativa dos professores de Informática
         do <strong>Instituto Federal Catarinense – Campus Videira</strong>.
       </p>
+      {% if isChristmas %}
+      <p class="christmas-wish">
+        Que este Natal renove a criatividade — e que o Ano Novo traga muitos
+        projetos para transformar a educação.
+      </p>
+      {% endif %}
       <div class="hero-buttons">
         <a href="{{ SITEURL }}/sobre" class="btn-primary">Conheça-nos</a>
         <a href="{{ SITEURL }}/contato" class="btn-secondary">Fale Conosco</a>
@@ -120,6 +133,11 @@
       Tem uma ideia? Quer desenvolver um projeto de software? Fale conosco e
       descubra como podemos ajudar você a transformar a sua ideia em realidade.
     </p>
+    {% if isChristmas %}
+    <p class="christmas-wish">
+      Um Natal de ideias novas e de projetos que transformam. Vamos construir juntos?
+    </p>
+    {% endif %}
     <a href="{{ SITEURL }}/contato" class="btn-primary">Quero Fazer Parte</a>
   </div>
 </section>

@@ -47,6 +47,14 @@ endblock %} {% block extra_head %}
 </div>
 
 <div class="container">
+  {% if isChristmas %}
+  <p class="team-greeting">
+    <span aria-hidden="true">🎄</span>
+    A equipe da Fábrica de Software deseja a você um Feliz Natal e um Ano Novo
+    cheio de boas ideias.
+    <span aria-hidden="true">🎁</span>
+  </p>
+  {% endif %}
   <div class="loading-indicator">
     <div class="spinner"></div>
   </div>
@@ -101,6 +109,7 @@ endblock %} {% block extra_head %}
         members.forEach((nameElement) => {
           const memberDiv = document.createElement("div");
           memberDiv.className = "team-member";
+          memberDiv.style.setProperty("--i", grid.children.length);
 
           const name = nameElement.textContent.trim();
           let imgSrc = "{{ SITEURL }}/images/equipe/default.webp";
@@ -118,13 +127,25 @@ endblock %} {% block extra_head %}
               const strong = currentElement.querySelector("strong");
               if (img) imgSrc = img.src;
               else if (strong) role = strong.textContent.trim();
-              else description = currentElement.textContent.trim();
+              else if (!/^Atualizado em/i.test(currentElement.textContent.trim())) {
+                description = currentElement.textContent.trim();
+              }
             }
             currentElement = currentElement.nextElementSibling;
           }
 
           memberDiv.innerHTML = `
           <div class="team-photo">
+            {% if isChristmas %}
+            <span class="team-hat" aria-hidden="true">
+              <svg viewBox="0 0 64 48" focusable="false">
+                <path d="M9 38C11.5 20 25 6 40 9c8 1.6 13 7.6 15 17z" fill="#b3122f" />
+                <path d="M7 33h48c4.2 0 7.6 3.1 7.6 7s-3.4 7-7.6 7H7c-4.2 0-7.6-3.1-7.6-7s3.4-7 7.6-7z" fill="#fffdf8" />
+                <circle cx="54" cy="10" r="7.5" fill="#fffdf8" />
+              </svg>
+            </span>
+            <span class="team-sparkle" aria-hidden="true">✨</span>
+            {% endif %}
             <img src="${imgSrc}" alt="${name}" loading="lazy">
           </div>
           <div class="team-info">
@@ -136,13 +157,14 @@ endblock %} {% block extra_head %}
 
           grid.appendChild(memberDiv);
 
-          // Remover os elementos originais do membro
+          // Remover os elementos originais do membro (preservando a nota de atualização)
           currentElement = nameElement.nextElementSibling;
           while (
             currentElement &&
             currentElement.tagName !== "H3" &&
             currentElement.tagName !== "H2"
           ) {
+            if (/^Atualizado em/i.test(currentElement.textContent.trim())) break;
             const next = currentElement.nextElementSibling;
             currentElement.remove();
             currentElement = next;

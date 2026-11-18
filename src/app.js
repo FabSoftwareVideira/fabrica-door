@@ -28,6 +28,11 @@ const createAdminProjectRoutes = require("./routes/adminProjectRoutes");
 // middlewares
 const createAuthMiddleware = require("./middlewares/authMiddleware");
 const renderPage = require("./utils/renderPage");
+const { getChristmasStatus } = require("./utils/christmasSeason");
+
+function formatMonthDay({ month, day }) {
+    return `${String(day).padStart(2, "0")}/${String(month).padStart(2, "0")}`;
+}
 
 function createApp() {
     const app = express();
@@ -47,6 +52,13 @@ function createApp() {
     const authService = createAuthService(adminUserModel);
 
     const pages = pageService.getAllPages();
+
+    const christmas = getChristmasStatus(site.CHRISTMAS);
+    if (christmas.active) {
+        console.log(
+            `[CHRISTMAS] Tema de Natal ativo (${formatMonthDay(christmas.start)} a ${formatMonthDay(christmas.end)}).`
+        );
+    }
 
     // nunjucks
     nunjucks.configure(path.join(site.rootDir, "src", "views"), {

@@ -43,11 +43,18 @@ if (ticker) {
 const canvas = document.getElementById('particle-canvas');
 const ctx = canvas.getContext('2d');
 
+const isChristmas = document.documentElement.dataset.season === 'christmas';
+
 const particles = [];
-const particleCount = 80;
+const particleCount = isChristmas ? 60 : 80;
 const emojiParticles = [];
-const emojiCount = 15;
-const emojis = ["🚀", "💻", "✨", "🎉", "🌟", "🔥"];
+const emojiCount = isChristmas ? 18 : 15;
+const emojis = isChristmas
+    ? ["🎄", "🎁", "❄️", "⭐", "🔔", "🧦"]
+    : ["🚀", "💻", "✨", "🎉", "🌟", "🔥"];
+
+const particleColor = isChristmas ? "255, 255, 255" : "0, 255, 255";
+const connectionColor = isChristmas ? "245, 217, 122" : "0, 255, 255";
 
 
 function resizeCanvas() {
@@ -93,7 +100,7 @@ class Particle {
         }
     }
     draw() {
-        ctx.fillStyle = `rgba(0,255,255,${this.alpha})`;
+        ctx.fillStyle = `rgba(${particleColor},${this.alpha})`;
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
         ctx.fill();
@@ -144,7 +151,7 @@ function connectParticles() {
             const dy = particles[a].y - particles[b].y;
             const dist = Math.sqrt(dx * dx + dy * dy);
             if (dist < 100) {
-                ctx.strokeStyle = `rgba(0,255,255,${0.3 * (1 - dist / 100)})`;
+                ctx.strokeStyle = `rgba(${connectionColor},${0.3 * (1 - dist / 100)})`;
                 ctx.lineWidth = 1;
                 ctx.beginPath();
                 ctx.moveTo(particles[a].x, particles[a].y);

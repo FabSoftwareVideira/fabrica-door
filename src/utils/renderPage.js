@@ -1,3 +1,5 @@
+const { isChristmasSeason } = require("./christmasSeason");
+
 module.exports = function renderPage(res, site, options) {
     const {
         template,
@@ -5,6 +7,8 @@ module.exports = function renderPage(res, site, options) {
         page = null,
         extra = {}
     } = options;
+
+    const christmasActive = isChristmasSeason(site.CHRISTMAS);
 
     res.render(template, {
         SITENAME: site.SITE_NAME,
@@ -23,6 +27,7 @@ module.exports = function renderPage(res, site, options) {
         isAuthenticated: Boolean(res.locals?.isAuthenticated),
         user: res.locals?.user || null,
         page,
+        isChristmas: christmasActive,
         ...extra
     });
 };

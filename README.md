@@ -125,6 +125,44 @@ src/
    ```
 3. Acesse: `http://localhost:8000`
 
+## Tema de Natal
+
+Durante uma janela anual configurável, o site ganha decoração e animações de
+Natal: neve caindo, luzes no cabeçalho, chapéus de Papai Noel nas fotos da
+equipe, cartões em estilo de doce de Natal e saudações sazonais. O tema é
+aplicado a todas as páginas (inclusive as administrativas) e desliga sozinho
+ao final da janela.
+
+As datas ficam no `.env` e **não têm ano**, então a mesma configuração vale
+para todos os anos:
+
+| Variável | Padrão | Descrição |
+|---|---|---|
+| `CHRISTMAS_THEME` | `auto` | `auto` ativa pela janela; `on` força a ativação (útil para testar); `off` desativa |
+| `CHRISTMAS_START` | `12-01` | Primeiro dia ativo, no formato `MM-DD` |
+| `CHRISTMAS_END` | `12-30` | Último dia ativo (inclusive), no formato `MM-DD` |
+| `CHRISTMAS_TIMEZONE` | `America/Sao_Paulo` | Fuso usado para decidir a data atual |
+
+A janela também pode atravessar a virada do ano, por exemplo
+`CHRISTMAS_START=12-20` e `CHRISTMAS_END=01-06`.
+
+Para pré-visualizar fora da janela:
+
+```bash
+CHRISTMAS_THEME=on npm run dev
+```
+
+No Windows PowerShell:
+
+```powershell
+$env:CHRISTMAS_THEME="on"; npm run dev
+```
+
+Quando a janela está ativa, o servidor adiciona `data-season="christmas"` ao
+`<html>`, carrega `assets/css/christmas.css` e `assets/js/christmas.js` e
+injeta os enfeites nos templates. A neve pode ser desligada pelo botão no canto
+inferior esquerdo e todas as animações respeitam `prefers-reduced-motion`.
+
 ## Deploy
 
 O deploy em produção continua via GitHub Actions, usando `docker-compose.yml` e variáveis do segredo `PROD_ENV_FILE`. Certifique-se de definir `JWT_SECRET` com um valor seguro em produção.

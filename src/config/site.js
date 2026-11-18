@@ -1,4 +1,9 @@
 const path = require("path");
+const {
+    DEFAULT_START,
+    DEFAULT_END,
+    DEFAULT_TIME_ZONE
+} = require("../utils/christmasSeason");
 
 const SITE_NAME = process.env.SITE_NAME || "Fábrica de Software - IFC Videira";
 const SITE_URL = process.env.SITE_URL || "";
@@ -20,6 +25,13 @@ module.exports = {
     APP_COMMIT,
     APP_BUILD_DATE,
     APP_IMAGE,
+    // Tema de Natal recorrente (MM-DD, válido para todos os anos)
+    CHRISTMAS: {
+        mode: process.env.CHRISTMAS_THEME || "auto",
+        start: process.env.CHRISTMAS_START || DEFAULT_START,
+        end: process.env.CHRISTMAS_END || DEFAULT_END,
+        timeZone: process.env.CHRISTMAS_TIMEZONE || DEFAULT_TIME_ZONE
+    },
     MENUITEMS: [
         { title: "Início", link: "/", path: "/" },
         { title: "Sobre", link: "/sobre", path: "/sobre" },
