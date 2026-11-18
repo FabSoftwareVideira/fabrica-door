@@ -68,7 +68,7 @@ VALUES (
     'Dezembro 2024',
     'images/projects/fabrica/logo.svg',
     '["images/projects/fabrica/logo.svg","images/projects/fabrica/logo.svg"]',
-    'https://github.com/fabricaSoftwareVideira/Cogercon',
+    'https://github.com/FabSoftwareVideira/Cogercon',
     'https://cogercon.videira.ifc.edu.br',
     '["HTML","CSS","JavaScript","Python","Django","Tailwind CSS","Docker","PostgreSQL","Git","Gunicorn","Nginx"]',
     '["Fabricio Bizotto (Professor)","Tiago Lopes Gonçalves (Professor)","Gabriel Sousa (Estudante)","Paulo Sergio Pierdona (Estudante)","Helder Martins (Estudante)"]',

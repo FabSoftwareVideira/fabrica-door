@@ -158,6 +158,24 @@ No Windows PowerShell:
 $env:CHRISTMAS_THEME="on"; npm run dev
 ```
 
+### Brincadeiras de Natal
+
+Na página inicial, quando o tema está ativo:
+
+- **Terminal natalino** — um terminal fictício que "compila" o Natal e aceita o
+  comando `npm install natal`.
+- **Árvore de código** — uma árvore de Natal desenhada com `{}`, `</>`, `;`,
+  `0`, `1`, `#` e outros caracteres de programação.
+- **Presente surpresa** — um presente que abre e revela uma mensagem da equipe.
+- **Visita ilustre** — clique no Papai Noel para receber um "Ho ho ho!".
+- **Trenó** — de tempos em tempos, um trenó com renas atravessa o topo da
+  página.
+- **Easter egg** — digite `FELIZ NATAL` em qualquer página para uma surpresa.
+
+Todas as brincadeiras funcionam sem bibliotecas extras e respeitam
+`prefers-reduced-motion` (a neve, o trenó e o confete do easter egg ficam
+desativados nesse modo).
+
 Quando a janela está ativa, o servidor adiciona `data-season="christmas"` ao
 `<html>`, carrega `assets/css/christmas.css` e `assets/js/christmas.js` e
 injeta os enfeites nos templates. A neve pode ser desligada pelo botão no canto

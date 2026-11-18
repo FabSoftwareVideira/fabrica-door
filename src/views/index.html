@@ -9,12 +9,12 @@
 {% block before_header %}
 {% if featuredProjects and featuredProjects.length %}
 {% macro featuredItems(duplicate) %}
-<div class="featured-ticker-group"{% if duplicate %} aria-hidden="true"{% endif %}>
+<div class="featured-ticker-group" {% if duplicate %} aria-hidden="true" {% endif %}>
   {% for project in featuredProjects %}
   <a class="featured-ticker-project"
     href="{% if project.published_url %}{{ project.published_url }}{% elif project.github_url %}{{ project.github_url }}{% else %}{{ SITEURL }}/projetos#projeto-{{ project.id }}{% endif %}"
-    {% if project.published_url or project.github_url %}target="_blank" rel="noopener noreferrer"{% endif %}
-    {% if duplicate %}tabindex="-1"{% endif %}>
+    {% if project.published_url or project.github_url %}target="_blank" rel="noopener noreferrer" {% endif %} {% if
+    duplicate %}tabindex="-1" {% endif %}>
     <span class="featured-ticker-project-title">{{ project.title }}</span>
     <span aria-hidden="true">↗</span>
   </a>
@@ -119,6 +119,98 @@
     </div>
   </div>
 </section>
+
+{% if isChristmas %}
+{# ── LABORATÓRIO DE NATAL ── #}
+<section class="christmas-lab" aria-labelledby="christmas-lab-title">
+  <div class="container">
+    <p class="christmas-lab-kicker">Modo festivo ativado</p>
+    <h2 id="christmas-lab-title">O Natal também compila</h2>
+
+    <div class="christmas-lab-grid">
+      <article class="christmas-panel christmas-terminal-panel">
+        <div class="christmas-terminal-bar">
+          <span class="christmas-terminal-dot" aria-hidden="true"></span>
+          <span class="christmas-terminal-dot" aria-hidden="true"></span>
+          <span class="christmas-terminal-dot" aria-hidden="true"></span>
+          <h3 class="christmas-terminal-title">terminal — natal.sh</h3>
+        </div>
+        <div class="christmas-terminal-body">
+          <div class="christmas-terminal-output" id="christmas-terminal-output" role="region"
+            aria-label="Mensagens do terminal natalino"></div>
+        </div>
+        <div class="christmas-terminal-actions">
+          <button type="button" class="christmas-chip" data-christmas-command="npm install natal">
+            <span aria-hidden="true">$</span> npm install natal
+          </button>
+          <button type="button" class="christmas-chip christmas-chip-ghost" data-christmas-command="clear">
+            limpar
+          </button>
+        </div>
+      </article>
+
+      <article class="christmas-panel christmas-tree-panel">
+        <h3 class="christmas-panel-title">Árvore de código</h3>
+        <pre class="christmas-ascii-tree" role="img"
+          aria-label="Árvore de Natal desenhada com barras, underscores, chaves, tags e outros caracteres de programação">
+           <span class="christmas-tree-star">*</span>
+          /_\
+         /_\_\
+        /_\<span class="christmas-tree-ornament">0</span>\_\
+       /_\_\_\_\
+      /_\_\<span class="christmas-tree-ornament">*</span>\_\
+     /_\_\_\_\_\_\
+    /_\_\_\<span class="christmas-tree-ornament">{}</span>\_\_\
+   /_\_\_\_<span class="christmas-tree-ornament">#</span>\_\_\_\
+  /_\_\_\_\<span class="christmas-tree-ornament">&lt;/&gt;</span>\_\_\_\
+ /_\_\_<span class="christmas-tree-ornament">0</span>\_\_\_\_<span class="christmas-tree-ornament">1</span>\_\_\
+/_\_\<span class="christmas-tree-ornament">;</span>\_\_\_\_\_\<span class="christmas-tree-ornament">;</span>\_\
+          <span class="christmas-tree-trunk">|||</span>
+         <span class="christmas-tree-trunk">[___]</span>
+        </pre>
+        <p class="christmas-panel-text christmas-tree-caption">
+          Compilada com zero warnings e muitos enfeites.
+        </p>
+      </article>
+
+      <article class="christmas-panel christmas-gift-panel">
+        <h3 class="christmas-panel-title">Presente surpresa</h3>
+        <p class="christmas-panel-text">
+          Tem um presente da equipe para você. Pode abrir.
+        </p>
+        <button type="button" class="christmas-gift" aria-expanded="false" aria-controls="christmas-gift-message"
+          aria-label="Abrir o presente da equipe">
+          <span class="christmas-gift-box" aria-hidden="true"></span>
+          <span class="christmas-gift-lid" aria-hidden="true"></span>
+          <span class="christmas-gift-bow" aria-hidden="true">🎀</span>
+        </button>
+        <p class="christmas-gift-message" id="christmas-gift-message" role="status" hidden>
+          <strong>Surpresa!</strong> A equipe da Fábrica de Software deseja a você
+          um Natal cheio de boas ideias, código limpo e projetos que transformam. 🎄
+        </p>
+      </article>
+
+      <article class="christmas-panel christmas-santa-panel">
+        <h3 class="christmas-panel-title">Visita ilustre</h3>
+        <p class="christmas-panel-text">
+          O Papai Noel passou por aqui. Dê um alô para ele.
+        </p>
+        <button type="button" class="christmas-santa" aria-label="Cumprimentar o Papai Noel">
+          <span aria-hidden="true">🎅</span>
+          <span class="christmas-santa-label">Diga olá</span>
+        </button>
+        <p class="christmas-santa-bubble" id="christmas-santa-bubble" role="status" hidden>
+          Ho ho ho! Feliz Natal da nossa equipe!
+        </p>
+      </article>
+    </div>
+
+    <p class="christmas-egg-hint">
+      Dica: digite <kbd>FELIZ NATAL</kbd> em qualquer lugar do site.
+    </p>
+  </div>
+</section>
+{% endif %}
 
 {# ── VÍDEO / CHAMADA ── #}
 <section class="video-section">

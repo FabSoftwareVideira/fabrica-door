@@ -27,6 +27,8 @@ html[data-season="christmas"] {
   --christmas-gold-light: #f5d97a;
   --christmas-cream: #fff8e9;
   --christmas-font: "Mountains of Christmas", "Roboto", cursive;
+  --christmas-mono: ui-monospace, SFMono-Regular, "Cascadia Code", "Fira Code",
+    Menlo, Consolas, monospace;
 }
 
 /* ---------- Fundo e tipografia ---------- */
@@ -587,6 +589,848 @@ html[data-season="christmas"] .video-overlay h2 {
   text-shadow: 0 2px 14px rgba(0, 0, 0, 0.35);
 }
 
+/* ---------- Trenó de Natal ---------- */
+
+.christmas-sleigh {
+  position: fixed;
+  top: 92px;
+  left: 0;
+  z-index: 960;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  pointer-events: none;
+  opacity: 0;
+  font-size: clamp(1.7rem, 3.4vw, 2.6rem);
+  filter: drop-shadow(0 6px 9px rgba(40, 10, 20, 0.28));
+  will-change: transform;
+}
+
+.christmas-sleigh.is-flying {
+  animation: christmas-sleigh-cross 17s linear forwards;
+}
+
+.christmas-sleigh-team {
+  display: inline-flex;
+  align-items: center;
+  letter-spacing: -0.08em;
+  animation: christmas-sleigh-bob 2.6s ease-in-out infinite;
+}
+
+.christmas-sleigh-sparkles {
+  margin-left: 2px;
+  font-size: 0.58em;
+  letter-spacing: 0.25em;
+  color: var(--christmas-gold-light);
+  text-shadow: 0 0 10px rgba(245, 217, 122, 0.85);
+  animation: christmas-sparkle-trail 1.8s ease-in-out infinite;
+}
+
+@keyframes christmas-sleigh-cross {
+  0% {
+    transform: translate3d(116vw, 8px, 0);
+    opacity: 0;
+  }
+  5% {
+    opacity: 0.95;
+  }
+  95% {
+    opacity: 0.95;
+  }
+  100% {
+    transform: translate3d(-30vw, -6px, 0);
+    opacity: 0;
+  }
+}
+
+@keyframes christmas-sleigh-bob {
+  0%,
+  100% {
+    transform: translateY(2px) rotate(2deg);
+  }
+  50% {
+    transform: translateY(-6px) rotate(-1deg);
+  }
+}
+
+@keyframes christmas-sparkle-trail {
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: translateX(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateX(4px);
+  }
+}
+
+/* ---------- Laboratório de Natal ---------- */
+
+.christmas-lab {
+  position: relative;
+  padding: 76px 0 66px;
+  background:
+    radial-gradient(circle at 12% 8%, rgba(201, 162, 39, 0.1), transparent 40%),
+    radial-gradient(circle at 88% 12%, rgba(15, 91, 61, 0.08), transparent 40%),
+    #fffdf8;
+  border-top: 1px solid rgba(179, 18, 47, 0.12);
+  border-bottom: 1px solid rgba(179, 18, 47, 0.12);
+  overflow: hidden;
+}
+
+.christmas-lab::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.45;
+  background-image:
+    radial-gradient(circle, rgba(179, 18, 47, 0.16) 0 1.2px, transparent 1.8px),
+    radial-gradient(circle, rgba(15, 91, 61, 0.14) 0 1px, transparent 1.6px);
+  background-size:
+    90px 90px,
+    130px 130px;
+  background-position:
+    0 0,
+    40px 60px;
+  mask-image: linear-gradient(180deg, transparent, #000 18%, #000 82%, transparent);
+}
+
+.christmas-lab .container {
+  position: relative;
+  z-index: 1;
+}
+
+.christmas-lab-kicker {
+  display: block;
+  width: fit-content;
+  margin: 0 auto 14px;
+  padding: 6px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(179, 18, 47, 0.24);
+  background: #fff8e9;
+  color: var(--christmas-red);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.christmas-lab h2 {
+  margin-bottom: 14px;
+  text-align: center;
+  color: var(--christmas-red-dark);
+  font-size: clamp(1.75rem, 3.6vw, 2.35rem);
+}
+
+.christmas-lab h2::after {
+  content: "";
+  display: block;
+  width: 96px;
+  height: 3px;
+  margin: 14px auto 0;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--christmas-gold),
+    transparent
+  );
+}
+
+.christmas-lab-lead {
+  max-width: 660px;
+  margin: 0 auto 38px;
+  text-align: center;
+  color: #6d5a49;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.christmas-lab-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.christmas-panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  border-radius: 16px;
+  border: 1px solid rgba(179, 18, 47, 0.16);
+  background: linear-gradient(180deg, #fffdf8, #fbf3e3);
+  box-shadow: 0 12px 30px rgba(110, 30, 40, 0.07);
+  overflow: hidden;
+}
+
+.christmas-panel::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  background: repeating-linear-gradient(
+    45deg,
+    var(--christmas-red) 0 9px,
+    #fffdf8 9px 18px
+  );
+  opacity: 0.85;
+}
+
+.christmas-panel-title {
+  margin-bottom: 8px;
+  color: var(--christmas-red-dark);
+  font-size: 1.05rem;
+  letter-spacing: 0.02em;
+}
+
+.christmas-panel-text {
+  color: #6d5a49;
+  font-size: 0.94rem;
+  line-height: 1.55;
+}
+
+/* Terminal natalino */
+
+.christmas-terminal-panel {
+  padding: 0;
+  background: #0b1a29;
+  border-color: rgba(245, 217, 122, 0.22);
+  box-shadow: 0 18px 38px rgba(8, 20, 31, 0.32);
+}
+
+.christmas-terminal-panel::before,
+.christmas-tree-panel::before {
+  background: repeating-linear-gradient(
+    45deg,
+    var(--christmas-green) 0 9px,
+    var(--christmas-gold) 9px 18px
+  );
+}
+
+.christmas-terminal-bar {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 11px 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(245, 217, 122, 0.16);
+}
+
+.christmas-terminal-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #ff6b6b;
+}
+
+.christmas-terminal-dot:nth-child(2) {
+  background: #f5c451;
+}
+
+.christmas-terminal-dot:nth-child(3) {
+  background: #2ec27e;
+}
+
+.christmas-terminal-title {
+  margin: 0 0 0 8px;
+  color: #9fb3c8;
+  font-family: var(--christmas-mono);
+  font-size: 0.76rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+
+.christmas-terminal-body {
+  flex: 1;
+  min-height: 224px;
+  max-height: 268px;
+  padding: 16px 18px 6px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(245, 217, 122, 0.35) transparent;
+}
+
+.christmas-terminal-output {
+  font-family: var(--christmas-mono);
+  font-size: 0.82rem;
+  line-height: 1.62;
+  color: #cfe6d8;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.christmas-terminal-line {
+  display: block;
+  min-height: 1.4em;
+}
+
+.christmas-terminal-line.is-cmd {
+  color: #f5d97a;
+}
+
+.christmas-terminal-line.is-ok {
+  color: #7ee2a8;
+}
+
+.christmas-terminal-line.is-info {
+  color: #9fb3c8;
+}
+
+.christmas-terminal-line.is-warn {
+  color: #ffb3c1;
+}
+
+.christmas-terminal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 12px 18px 18px;
+}
+
+.christmas-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(245, 217, 122, 0.5);
+  background: rgba(245, 217, 122, 0.1);
+  color: #ffe6a7;
+  font-family: var(--christmas-mono);
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.christmas-chip:hover,
+.christmas-chip:focus-visible {
+  background: var(--christmas-gold-light);
+  border-color: var(--christmas-gold-light);
+  color: #3a1b12;
+  transform: translateY(-1px);
+}
+
+.christmas-chip:focus-visible {
+  outline: 2px solid #fff8e9;
+  outline-offset: 2px;
+}
+
+.christmas-chip-ghost {
+  background: transparent;
+  border-color: rgba(159, 179, 200, 0.35);
+  color: #9fb3c8;
+}
+
+.christmas-chip-ghost:hover,
+.christmas-chip-ghost:focus-visible {
+  background: rgba(159, 179, 200, 0.16);
+  border-color: rgba(159, 179, 200, 0.6);
+  color: #e6f0f7;
+}
+
+/* Árvore de código */
+
+.christmas-tree-panel {
+  align-items: center;
+  justify-content: flex-start;
+  background:
+    radial-gradient(circle at 50% 12%, rgba(46, 194, 126, 0.18), transparent 58%),
+    linear-gradient(180deg, #0c1c2b, #08131f);
+  border-color: rgba(46, 194, 126, 0.24);
+  box-shadow: 0 18px 38px rgba(8, 20, 31, 0.28);
+}
+
+.christmas-tree-panel .christmas-panel-title {
+  color: #9fe3bd;
+}
+
+.christmas-ascii-tree {
+  margin: 8px 0 4px;
+  color: #6fd39b;
+  font-family: var(--christmas-mono);
+  font-size: clamp(0.75rem, 2vw, 1.2rem);
+  line-height: 1.08;
+  letter-spacing: 0.01em;
+  white-space: pre;
+  text-shadow: 0 0 14px rgba(46, 194, 126, 0.22);
+}
+
+.christmas-tree-star {
+  display: inline-block;
+  font-size: 1.35em;
+  line-height: 1;
+  color: var(--christmas-gold-light);
+  text-shadow: 0 0 16px rgba(245, 217, 122, 0.9);
+  animation: christmas-star-twinkle 2.6s ease-in-out infinite;
+}
+
+.christmas-tree-ornament {
+  color: #f5d97a;
+  text-shadow: 0 0 9px rgba(245, 217, 122, 0.6);
+}
+
+.christmas-tree-trunk {
+  color: #d8a15c;
+}
+
+.christmas-tree-caption {
+  margin-top: auto;
+  padding-top: 10px;
+  color: #9fb3c8;
+  font-size: 0.82rem;
+  text-align: center;
+}
+
+@keyframes christmas-star-twinkle {
+  0%,
+  100% {
+    opacity: 0.65;
+    transform: scale(0.92) rotate(0deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.12) rotate(8deg);
+  }
+}
+
+/* Presente surpresa */
+
+.christmas-gift-panel,
+.christmas-santa-panel {
+  align-items: center;
+  text-align: center;
+}
+
+.christmas-gift-panel .christmas-panel-text,
+.christmas-santa-panel .christmas-panel-text {
+  max-width: 260px;
+}
+
+.christmas-gift {
+  position: relative;
+  width: 116px;
+  height: 112px;
+  margin: 14px 0 6px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.christmas-gift:focus-visible {
+  outline: 2px solid var(--christmas-gold);
+  outline-offset: 8px;
+  border-radius: 12px;
+}
+
+.christmas-gift-box {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 0;
+  height: 68px;
+  border-radius: 7px 7px 9px 9px;
+  background: linear-gradient(135deg, #d21c40, #a30d29 58%, #7d0a1f);
+  box-shadow:
+    inset -10px 0 16px rgba(0, 0, 0, 0.18),
+    0 12px 22px rgba(120, 20, 40, 0.24);
+  transition: transform 0.4s ease;
+}
+
+.christmas-gift-box::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 16px;
+  transform: translateX(-50%);
+  background: linear-gradient(180deg, #f5d97a, #c9a227);
+  box-shadow: 0 0 10px rgba(245, 217, 122, 0.4);
+}
+
+.christmas-gift-lid {
+  position: absolute;
+  left: 2px;
+  right: 2px;
+  bottom: 58px;
+  height: 26px;
+  border-radius: 7px;
+  background: linear-gradient(135deg, #e02548, #b3122f 62%, #8c0d24);
+  box-shadow: 0 6px 12px rgba(120, 20, 40, 0.22);
+  transform-origin: 12% 100%;
+  transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.3, 1.2);
+  z-index: 2;
+}
+
+.christmas-gift-lid::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 16px;
+  transform: translateX(-50%);
+  background: linear-gradient(180deg, #f5d97a, #c9a227);
+}
+
+.christmas-gift-bow {
+  position: absolute;
+  left: 50%;
+  bottom: 74px;
+  z-index: 3;
+  font-size: 1.6rem;
+  line-height: 1;
+  transform: translateX(-50%);
+  filter: drop-shadow(0 2px 3px rgba(80, 10, 25, 0.25));
+  transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.3, 1.2);
+}
+
+.christmas-gift.is-open .christmas-gift-lid {
+  transform: translate(8px, -16px) rotate(-14deg);
+}
+
+.christmas-gift.is-open .christmas-gift-bow {
+  transform: translate(calc(-50% + 10px), -28px) rotate(-10deg);
+}
+
+.christmas-gift.is-open .christmas-gift-box {
+  transform: translateY(2px) scale(0.98);
+}
+
+.christmas-gift::after {
+  content: "✨  ✦  ✨";
+  position: absolute;
+  top: -6px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 1.1rem;
+  letter-spacing: 0.4em;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.christmas-gift.is-open::after {
+  opacity: 1;
+  animation: christmas-gift-sparkle 1.6s ease-in-out infinite;
+}
+
+@keyframes christmas-gift-sparkle {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: translateY(2px) scale(0.94);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-4px) scale(1.06);
+  }
+}
+
+.christmas-gift-message {
+  width: 100%;
+  margin-top: 16px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px dashed rgba(201, 162, 39, 0.6);
+  background: #fff8e9;
+  color: #5b2a24;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  text-align: left;
+  box-shadow: inset 0 0 18px rgba(245, 217, 122, 0.16);
+  animation: christmas-message-in 0.45s ease-out;
+}
+
+.christmas-gift-message strong {
+  color: var(--christmas-red-dark);
+}
+
+.christmas-gift-message[hidden] {
+  display: none;
+}
+
+@keyframes christmas-message-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Papai Noel */
+
+.christmas-santa {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  margin: 10px 0 0;
+  padding: 12px 22px 10px;
+  border-radius: 16px;
+  border: 1px solid rgba(179, 18, 47, 0.2);
+  background: #fffdf8;
+  box-shadow: 0 8px 18px rgba(110, 30, 40, 0.08);
+  cursor: pointer;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
+}
+
+.christmas-santa > span[aria-hidden="true"] {
+  font-size: 3rem;
+  line-height: 1;
+  filter: drop-shadow(0 4px 6px rgba(60, 10, 20, 0.2));
+}
+
+.christmas-santa-label {
+  color: var(--christmas-green);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.christmas-santa:hover,
+.christmas-santa:focus-visible {
+  transform: translateY(-3px);
+  border-color: var(--christmas-gold);
+  box-shadow: 0 14px 24px rgba(110, 30, 40, 0.14);
+}
+
+.christmas-santa:focus-visible {
+  outline: 2px solid var(--christmas-gold);
+  outline-offset: 3px;
+}
+
+.christmas-santa.is-ho-ho > span[aria-hidden="true"] {
+  animation: christmas-santa-hop 0.7s ease;
+}
+
+@keyframes christmas-santa-hop {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  30% {
+    transform: translateY(-8px) rotate(-6deg);
+  }
+  60% {
+    transform: translateY(-2px) rotate(4deg);
+  }
+}
+
+.christmas-ho {
+  position: absolute;
+  top: -2px;
+  font-family: var(--christmas-font);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--christmas-red);
+  pointer-events: none;
+  animation: christmas-ho-float 1.3s ease-out forwards;
+}
+
+@keyframes christmas-ho-float {
+  0% {
+    opacity: 0;
+    transform: translateY(6px) scale(0.8);
+  }
+  25% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-34px) scale(1.15) rotate(var(--tilt, 0deg));
+  }
+}
+
+.christmas-santa-bubble {
+  position: relative;
+  width: 100%;
+  max-width: 280px;
+  margin-top: 16px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #b3122f, #8c0d24);
+  color: #fff8e9;
+  font-family: var(--christmas-font);
+  font-size: 1.05rem;
+  line-height: 1.3;
+  text-wrap: balance;
+  box-shadow: 0 10px 22px rgba(120, 20, 40, 0.2);
+  animation: christmas-bubble-in 0.35s cubic-bezier(0.2, 0.8, 0.3, 1.2);
+}
+
+.christmas-santa-bubble[hidden] {
+  display: none;
+}
+
+.christmas-santa-bubble::before {
+  content: "";
+  position: absolute;
+  top: -5px;
+  left: 50%;
+  width: 12px;
+  height: 12px;
+  transform: translateX(-50%) rotate(45deg);
+  background: #b3122f;
+  border-radius: 2px;
+}
+
+@keyframes christmas-bubble-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Dica do easter egg */
+
+.christmas-egg-hint {
+  margin: 30px auto 0;
+  text-align: center;
+  color: #7a6553;
+  font-size: 0.9rem;
+}
+
+.christmas-egg-hint kbd {
+  display: inline-block;
+  margin: 0 3px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(179, 18, 47, 0.28);
+  border-bottom-width: 2px;
+  background: #fffdf8;
+  color: var(--christmas-red-dark);
+  font-family: var(--christmas-mono);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+/* Easter egg */
+
+.christmas-egg {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  overflow: hidden;
+  pointer-events: none;
+  background: radial-gradient(
+    circle at 50% 45%,
+    rgba(9, 22, 37, 0.55),
+    rgba(9, 22, 37, 0.82)
+  );
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.christmas-egg.is-visible {
+  opacity: 1;
+}
+
+.christmas-egg-card {
+  position: relative;
+  z-index: 2;
+  max-width: 480px;
+  padding: 34px 30px;
+  text-align: center;
+  border-radius: 22px;
+  border: 1px solid rgba(245, 217, 122, 0.6);
+  background: linear-gradient(
+    160deg,
+    rgba(125, 10, 31, 0.96),
+    rgba(10, 30, 22, 0.96)
+  );
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.55),
+    0 0 0 8px rgba(245, 217, 122, 0.08),
+    inset 0 0 40px rgba(245, 217, 122, 0.1);
+  animation: christmas-egg-card-in 0.6s cubic-bezier(0.2, 0.8, 0.3, 1.2);
+}
+
+.christmas-egg-tree {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 2.6rem;
+  line-height: 1;
+  filter: drop-shadow(0 0 18px rgba(245, 217, 122, 0.45));
+}
+
+.christmas-egg-title {
+  color: var(--christmas-gold-light);
+  font-family: var(--christmas-font);
+  font-size: clamp(2rem, 7vw, 3rem);
+  line-height: 1;
+  letter-spacing: 0.04em;
+  text-shadow: 0 0 30px rgba(245, 217, 122, 0.5);
+}
+
+.christmas-egg-text {
+  margin-top: 10px;
+  color: #fff8e9;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.christmas-egg-confetti {
+  position: absolute;
+  top: -8vh;
+  left: var(--left, 50%);
+  z-index: 1;
+  font-size: var(--size, 1.1rem);
+  animation: christmas-egg-fall var(--duration, 3s) linear var(--delay, 0s)
+    forwards;
+}
+
+@keyframes christmas-egg-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(22px) scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes christmas-egg-fall {
+  from {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+    opacity: 1;
+  }
+  to {
+    transform: translate3d(var(--drift, 0), 115vh, 0) rotate(420deg);
+    opacity: 0.85;
+  }
+}
+
 /* ---------- Faixa de destaques ---------- */
 
 html[data-season="christmas"] .featured-ticker {
@@ -1006,6 +1850,40 @@ html[data-season="christmas"] .footer-greeting {
     width: 36px;
     height: 36px;
   }
+
+  .christmas-lab {
+    padding: 56px 0 50px;
+  }
+
+  .christmas-lab-grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .christmas-panel {
+    padding: 20px;
+  }
+
+  .christmas-terminal-panel {
+    padding: 0;
+  }
+
+  .christmas-terminal-body {
+    min-height: 200px;
+    max-height: 240px;
+  }
+
+  .christmas-tree-caption {
+    margin-top: 8px;
+  }
+
+  .christmas-sleigh {
+    font-size: 1.9rem;
+  }
+
+  .christmas-egg-card {
+    padding: 28px 22px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -1016,6 +1894,22 @@ html[data-season="christmas"] .footer-greeting {
   /* Evita que o segundo 🎄 quebre para uma linha própria em telas estreitas. */
   .christmas-eyebrow span[aria-hidden="true"]:last-child {
     display: none;
+  }
+
+  .christmas-terminal-output {
+    font-size: 0.76rem;
+  }
+
+  .christmas-ascii-tree {
+    font-size: 0.9rem;
+  }
+
+  .christmas-sleigh {
+    font-size: 1.6rem;
+  }
+
+  .christmas-egg-title {
+    font-size: 2rem;
   }
 }
 
@@ -1048,5 +1942,28 @@ html[data-season="christmas"] .footer-greeting {
 
   html[data-season="christmas"] .btn-primary::after {
     display: none;
+  }
+
+  .christmas-sleigh,
+  .christmas-sleigh-team,
+  .christmas-sleigh-sparkles,
+  .christmas-tree-star,
+  .christmas-gift::after,
+  .christmas-gift-message,
+  .christmas-santa-bubble,
+  .christmas-egg-card,
+  .christmas-egg-confetti {
+    animation: none;
+  }
+
+  .christmas-sleigh {
+    display: none;
+  }
+
+  .christmas-gift-lid,
+  .christmas-gift-bow,
+  .christmas-gift-box,
+  .christmas-egg {
+    transition: none;
   }
 }

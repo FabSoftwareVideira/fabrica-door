@@ -138,6 +138,7 @@ test("o layout só carrega os assets de Natal quando o tema está ativo", () => 
     assert.match(withoutChristmas, /data-season=""/);
     assert.doesNotMatch(withoutChristmas, /christmas\.css/);
     assert.doesNotMatch(withoutChristmas, /christmas-snow/);
+    assert.doesNotMatch(withoutChristmas, /christmas-sleigh/);
 
     const withChristmas = templates.render("base.html", {
         ...base,
@@ -148,6 +149,7 @@ test("o layout só carrega os assets de Natal quando o tema está ativo", () => 
     assert.match(withChristmas, /assets\/css\/christmas\.css/);
     assert.match(withChristmas, /assets\/js\/christmas\.js/);
     assert.match(withChristmas, /id="christmas-snow"/);
+    assert.match(withChristmas, /id="christmas-sleigh"/);
     assert.match(withChristmas, /class="santa-hat"/);
     assert.match(withChristmas, /class="christmas-lights"/);
 });
@@ -165,6 +167,25 @@ test("a home e a equipe recebem os enfeites de Natal", () => {
 
     assert.match(index, /christmas-eyebrow/);
     assert.match(index, /Feliz Natal da Fábrica de Software/);
+    assert.match(index, /christmas-lab/);
+    assert.match(index, /christmas-ascii-tree/);
+    assert.match(index, /data-christmas-command="npm install natal"/);
+    assert.match(index, /id="christmas-gift-message"/);
+    assert.match(index, /id="christmas-santa-bubble"/);
+    assert.match(index, /FELIZ NATAL<\/kbd>/);
+
+    const regularIndex = templates.render("index.html", {
+        SITEURL: "",
+        SITENAME: "Fábrica",
+        MENUITEMS: [],
+        SOCIAL_LINKS: [],
+        current_year: 2026,
+        isChristmas: false,
+        featuredProjects: []
+    });
+
+    assert.doesNotMatch(regularIndex, /christmas-lab/);
+    assert.doesNotMatch(regularIndex, /christmas-ascii-tree/);
 
     const team = templates.render("team.html", {
         SITEURL: "",
