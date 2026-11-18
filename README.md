@@ -194,6 +194,33 @@ injeta os enfeites nos templates. A neve e a música podem ser ligadas ou
 desligadas pelos botões no canto inferior esquerdo e todas as animações
 respeitam `prefers-reduced-motion`.
 
+## Rodapé e versão
+
+O rodapé mostra o commit empacotado na imagem (`Commit: 0123456`), com link para
+o commit no GitHub e o hash completo no `title`, além da data do build:
+
+```
+Commit: 0123456 · Build: 18/11/2026 09:34
+```
+
+O Dokploy não expõe o SHA do commit como variável de ambiente, então o
+`Dockerfile` lê o `.git` do contexto de build em um estágio separado e grava
+`build-info.json` com `scripts/generateBuildInfo.js`. Só o JSON entra na imagem
+final — o `.git` fica de fora. Para gerar localmente:
+
+```bash
+npm run build-info
+```
+
+A resolução do hash segue esta ordem:
+
+1. `GIT_COMMIT`, `SOURCE_COMMIT`, `DOKPLOY_COMMIT_SHA` ou `GITHUB_SHA` (em tempo
+   de execução ou como build arg do `docker compose`);
+2. o commit lido do `.git` durante o build;
+3. se nada for encontrado, o rodapé cai no fallback `Versão: $IMAGE_TAG`.
+
+Use `BUILD_DATE` (ISO 8601 ou `AAAA-MM-DD`) para fixar a data do build.
+
 ## Deploy
 
 O deploy em produção continua via GitHub Actions, usando `docker-compose.yml` e variáveis do segredo `PROD_ENV_FILE`. Certifique-se de definir `JWT_SECRET` com um valor seguro em produção.

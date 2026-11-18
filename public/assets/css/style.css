@@ -928,6 +928,18 @@ footer {
   gap: 4px 8px;
 }
 
+.footer-commit {
+  color: inherit;
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-size: 0.95em;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.footer-commit:hover {
+  color: var(--primary-color);
+}
+
 @media (max-width: 600px) {
   .footer-build small {
     flex-direction: column;

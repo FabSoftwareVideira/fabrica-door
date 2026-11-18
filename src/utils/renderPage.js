@@ -20,6 +20,7 @@ module.exports = function renderPage(res, site, options) {
         SOCIAL_LINKS: site.SOCIAL_LINKS,
         APP_VERSION: site.APP_VERSION,
         APP_COMMIT: site.APP_COMMIT,
+        APP_COMMIT_FULL: site.APP_COMMIT_FULL,
         APP_BUILD_DATE: site.APP_BUILD_DATE,
         APP_IMAGE: site.APP_IMAGE,
         current_year: new Date().getFullYear(),

@@ -5,6 +5,11 @@ services:
       context: .
       dockerfile: Dockerfile
       target: production
+      # O build lê o .git do contexto; estes args permitem sobrescrever o
+      # commit/data quando o clone não estiver disponível.
+      args:
+        GIT_COMMIT: ${GIT_COMMIT:-}
+        BUILD_DATE: ${BUILD_DATE:-}
 
     image: fabrica-door:${IMAGE_TAG:-latest}
     restart: unless-stopped

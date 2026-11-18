@@ -9,7 +9,8 @@
         "predev": "npm run migrate",
         "dev": "node --watch src/server.js",
         "migrate": "node src/db/migrate.js",
-        "hash-password": "node src/db/hashPassword.js"
+        "hash-password": "node src/db/hashPassword.js",
+        "build-info": "node scripts/generateBuildInfo.js"
     },
     "engines": {
         "node": ">=20"

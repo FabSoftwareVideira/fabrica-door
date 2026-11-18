@@ -181,3 +181,6 @@ npm-debug.log*
 # Outros
 *.log
 uploads/
+
+# Gerado no build da imagem (commit exibido no rodapé)
+build-info.json

@@ -24,7 +24,24 @@ EXPOSE 8000
 
 CMD ["npm", "run", "dev"]
 
-# Stage 3: Production
+# Stage 3: Build info
+# O Dokploy não expõe o SHA do commit como variável de ambiente, então lemos o
+# .git do contexto de build e gravamos o hash em build-info.json. O .git fica
+# só neste estágio: a imagem final recebe apenas o JSON.
+FROM node:24-alpine AS buildinfo
+
+WORKDIR /app
+
+# Permitem sobrescrever o commit/data quando o build não tem acesso ao .git.
+ARG GIT_COMMIT=""
+ARG BUILD_DATE=""
+
+COPY . .
+
+RUN GIT_COMMIT="$GIT_COMMIT" BUILD_DATE="$BUILD_DATE" \
+    node scripts/generateBuildInfo.js
+
+# Stage 4: Production
 FROM base AS production
 
 ENV NODE_ENV=production
@@ -35,7 +52,10 @@ COPY package*.json ./
 RUN npm ci --omit=dev \
     && npm cache clean --force
 
-COPY --chown=appuser:appgroup . .
+COPY --chown=appuser:appgroup src ./src
+COPY --chown=appuser:appgroup public ./public
+COPY --chown=appuser:appgroup entrypoint.sh README.md LICENSE ./
+COPY --from=buildinfo --chown=appuser:appgroup /app/build-info.json ./build-info.json
 
 RUN mkdir -p public/assets/uploads \
     && chown -R appuser:appgroup public/assets/uploads \

@@ -160,10 +160,26 @@
       <hr class="footer-divider">
       <div class="footer-build">
         <small>
-          Versão: {{ APP_VERSION }}
-          {% if APP_COMMIT and APP_COMMIT != "unknown" %} &mdash; Commit: {{ APP_COMMIT }}{% endif %}
-          {% if APP_BUILD_DATE %} &mdash; Build: {{ APP_BUILD_DATE }}{% endif %}
-          {% if APP_IMAGE %} &mdash; Imagem: {{ APP_IMAGE }}{% endif %}
+          {% if APP_COMMIT %}
+          <span class="footer-build-commit">
+            Commit:
+            <a class="footer-commit"
+              href="https://github.com/FabSoftwareVideira/fabrica-door/commit/{{ APP_COMMIT_FULL or APP_COMMIT }}"
+              target="_blank" rel="noopener noreferrer"
+              title="Commit completo: {{ APP_COMMIT_FULL or APP_COMMIT }}">{{ APP_COMMIT }}</a>
+          </span>
+          {% else %}
+          <span>Versão: {{ APP_VERSION }}</span>
+          {% endif %}
+          {% if APP_COMMIT and APP_VERSION and APP_VERSION != "latest" and APP_VERSION != "dev" %}
+          <span>Versão: {{ APP_VERSION }}</span>
+          {% endif %}
+          {% if APP_BUILD_DATE %}
+          <span>Build: {{ APP_BUILD_DATE }}</span>
+          {% endif %}
+          {% if APP_IMAGE %}
+          <span>Imagem: {{ APP_IMAGE }}</span>
+          {% endif %}
         </small>
       </div>
     </div>
